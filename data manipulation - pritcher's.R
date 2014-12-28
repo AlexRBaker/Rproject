@@ -38,7 +38,7 @@ for (i in 1:(length(dades2[,1]))) {
 
 
 
-setwd("G:/GIThub/Rproject")
+
 
 j=1
 p=0
@@ -59,11 +59,9 @@ for (i in 1:length(dades2[,1])) {
 simsto[k,]<-dades2[j,]
 simsto[k,1]<-substr(dades2[j,1],1,7)
 
-redsimsto<-simsto[simsto[,1]!=0,c(1,2,3,4,6,7,8,9,10,11)]
-colnames(redsimsto)<-c("Paper","Organism","Raw data avilable", "Gmatrix","cormatrix","directory","data link","Reference","Taxon1","Taxon2")
-write.csv(file="pardatdes", x=redsimsto,row.names=FALSE)
+redsimsto<-simsto[simsto[,1]!=0,c(1,2,3,4,6,7,8,9,10,11,12)]
+colnames(redsimsto)<-c("Paper","Organism","Raw data avilable", "Gmatrix","cormatrix","directory","data link","Reference","Taxon1","Taxon2","Multiple Species")
 
-setwd("C:/ABakeSumProj/Lots of data")
-
-
-write.csv(file="pardatdes", x=dades2,row.names=FALSE)
+setwd("G:/GIThub/Rproject")
+write.csv(file="pardatdes.csv", x=redsimsto,row.names=FALSE)
+write.csv(file="dades2.csv", x=dades2,row.names=FALSE)
