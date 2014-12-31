@@ -65,3 +65,8 @@ colnames(redsimsto)<-c("Paper","Organism","Raw data avilable", "Gmatrix","cormat
 setwd("G:/GIThub/Rproject")
 write.csv(file="pardatdes.csv", x=redsimsto,row.names=FALSE)
 write.csv(file="dades2.csv", x=dades2,row.names=FALSE)
+
+
+
+############################# Checking the list of downloaded papers against the paper identifier in the pardatdesmanmod and reducing pardatdesmanmod to minimum number of rows.
+
