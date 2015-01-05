@@ -75,7 +75,7 @@ write.csv(file="dades2.csv", x=dades2,row.names=FALSE)
 
 ############################# Checking the list of downloaded papers against the paper identifier in the pardatdesmanmod and reducing pardatdesmanmod to minimum number of rows.
 pdfz<-list.files(path="G:/GIThub/Papers")
-tempsto<-read.csv("G:/GIThub/Rproject/pardatdesmanmod.csv",header=TRUE,stringsAsFactors=FALSE)
+tempsto<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/pardatdesmanmod.csv",header=TRUE,stringsAsFactors=FALSE)
 grepl(substr(pdfz[1],1,7), tempsto[,1])
 
 ######Creates a new matrix where both the cov and cor column are 1
@@ -116,8 +116,115 @@ for (i in 1:length(tempsto3[,1])) {
     }
   }
 }
-
+setwd("C:/Users/s4284361/Documents/GitHub/Rproject")
+write.csv(file="OrdDatDes.csv", x=tempsto3,row.names=FALSE)
 tempsto3[tempsto3[,16]==0,][,1] #### Gets the subset of papers without a corresponding pdf
 
 
 #### Used to make sure a pdf was retrieved for every entry.
+
+
+###### Processing Gcor and Gcov matrices from Pritcher's paper.
+
+### First need to create list of path files. Making it a function to avoid clutter in work space
+dir1<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_&_means_as_CSVs/"
+dir2<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs/"
+## Creates list of pathfiles for files ina folder.
+path_file <- function(dir1,dir2) {
+  if (missing(dir2)) {
+    p<-paste(dir1,list.files(path=dir1),sep="")
+    return (list(dir1=p))
+  }
+  else {
+  q<-paste(dir2,list.files(path=dir2),sep="")
+  p<-paste(dir1,list.files(path=dir1),sep="")
+  return (list(dir1=p,dir2=q))
+  }
+}
+#### later found that full.names is an option to get complete path_file for documents in a directory for list.files/dir.
+## From Pitcher's, create list of matrices for use in R modified to be  function.
+MatasList<-function(dir1,dir2){
+if (missing(dir2)) {
+  q<-path_file(dir1)
+  setwd(dir1)
+  matrices <- dir()
+  no.mats <- length(q[[1]][!grepl("list", q[[1]])])
+  matrix_list <- list()
+  
+  # this loop reads in each matrix from the folder of .csv files and writes
+  # them into a list
+  for (i in 1:no.mats) {
+    matrix_list[[i]] <- read.csv(q[[1]][!grepl("list", q[[1]])][i])
+  }
+  names(matrix_list) <- matrices[!grepl("list",q[[1]])]
+  return(matrix_list)
+}  
+else {
+q<-path_file(dir1,dir2)
+setwd(dir1)
+matrices <- dir()
+no.mats <- length(q[[1]][!grepl("list", q[[1]])])
+matrix_list <- list()
+
+# this loop reads in each matrix from the folder of .csv files and writes
+# them into a list
+for (i in 1:no.mats) {
+  matrix_list[[i]] <- read.csv(q[[1]][!grepl("list", q[[1]])][i])
+}
+names(matrix_list) <- matrices[!grepl("list",q[[1]])]
+
+#### Now for correlation matrices
+## From Pitcher's, create list of matrices for use in R.
+setwd(dir2)
+matricesc <- dir()
+no.matsc <- length(q[[2]][!grepl("list", q[[2]])])
+matrix_listc <- list()
+# this loop reads in each matrix from the folder of .csv files and writes
+# them into a list
+for (i in 1:no.matsc) {
+  matrix_listc[[i]] <- read.csv(q[[2]][!grepl("list", q[[2]])][i])
+}
+names(matrix_listc) <- matricesc[!grepl("list",q[[2]])]
+return (list(matrix_listc=matrix_listc,matrix_list=matrix_list))
+}
+}
+
+#### need a function to extract a submatrix from a larger matrix such that it makes the variables in another matrix
+Psubmats<-function(dir1,dir2) {
+  ### It is assumed dir1 is the larger matrix and dir 2 the list of smaller ones
+  modmatsto=list()
+  count=0
+  p<-MatasList(dir1,dir2)
+  for (c in p[[1]]) {
+    Q<-p[[2]][grepl(substr(names(c),1,7),names(p[[2]]))] ## takes substring from dir1 and compare and extract matrice with matching name frmo dir 2
+    for (z in Q) {
+      matr<-##blank matrix
+      for (i in z) {
+        matr[,i]<-c[,grepl(colnames(z)[i],gsub(".","",colnames(c),fixed=TRUE),ignore.case=TRUE)]
+        colnames(matr)[i]<-colnames(Q[[2]])[1] ## name traits in matrix
+      }
+      modmatsto[[paste(names(z))]]<-matr   #### name matrix with corresponding identifier from other list
+    }
+  }
+  return (modmatsto)
+}
+### for storage current grepl command grepl(colnames(mno[[2]][[1]])[1],colnames(Q[[1]]),ignore.case=TRUE)
+### modified to grepl(gsub(".","",colnames(mno[[2]][[1]])[3],fixed=TRUE),colnames(Q[[1]]),ignore.case=TRUE) to counter different header style
+#### Write csv files from list function with appropiate name
+WriteMatList<-function(list,dir) {
+  for (i in 1:length(list)) {
+    setwd(dir)
+    write.csv(file=names(list[i]), x=list[[i]],row.names=FALSE)
+  }
+}
+
+#### Projection of P through G after making submatrices and standardising in some manner.
+PthroughG<-function(dir1,dir2,checkscaling) {
+  ProjPG<-matrix(0,nrow=k,ncol=p)
+  for (i in 1:k) {
+    for (j in 1:p){
+      ProjPG[i,j]<-t((eigen(LisP[[i]])$vectors[,j]))%*%LisG[[i]]%*%(eigen(LisP[[i]])$vectors[,j])
+    }
+  }
+  
+}
