@@ -218,13 +218,66 @@ WriteMatList<-function(list,dir) {
   }
 }
 
-#### Projection of P through G after making submatrices and standardising in some manner.
-PthroughG<-function(dir1,dir2,checkscaling) {
-  ProjPG<-matrix(0,nrow=k,ncol=p)
-  for (i in 1:k) {
-    for (j in 1:p){
-      ProjPG[i,j]<-t((eigen(LisP[[i]])$vectors[,j]))%*%LisG[[i]]%*%(eigen(LisP[[i]])$vectors[,j])
+MaxnoTraits<- function(list) {
+  q<-0
+  for (i in list) {
+    p<-length(i[1,])
+    q<-max(p,q)
+  }
+  return(q)
+}
+#### Projection of P through G after making submatrices and standardising in some manner. ### There is an implicit assumption of equal length between the two lists
+PthroughG<-function(dir, dir2) { ## dir is the directory where writeMatList has written the new P matrices and dir2 is the dir containing the G matrices
+  Pmat<-MatasList(dir)
+  Gmat<-MatasList(Gmat)
+  ProjPG<-matrix(NA,nrow=length(Pmat),ncol=MaxnoTraits(Pmat))
+  for (i in 1:length(Pmat)) {
+    Psto<-Pmat[grepl(names(Pmat[i]),names(Gmat))]
+    Gsto<-Gmat[grepl(names(Pmat[i]),names(Gmat))]
+    for (j in 1:length(Psto[[1]][1,])){
+      ProjPG[i,j]<-t((eigen(Psto[[1]])$vectors[,j]))%*%Gsto[[1]]%*%(eigen(Psto[[1]])$vectors[,j])
     }
   }
-  
+  return(ProjPG)
+}
+
+#### Might be able to include taxons if I refer to the Matrix Index, and then create two subsets of the G mat and Pmat which match the selection.
+#### Taxon1 and 2 are as names in Pitcher's et al. and list1 and 2 are the list of P and G matrices to be selected from. The results should be a list of two list of matrices of equal length.
+ExtractTaxon<-function(taxon1,taxon2,list1,list2,trait_type) {
+  z<-read.csv("C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv",header=TRUE)
+  #### Various decision trees for the grepl commands to get an appropiate subset of MatrixIndex to work on.
+  if (missing(trait_type)) {
+    
+  }
+  else if (missing(taxon2)) {
+    
+  }
+  else if (missing(taxon1)) {
+    
+  }
+  else if (missing(taxon1) & missing(taxon2)) {
+    
+  }
+  else if (missing(taxon1) & missing(trait_type)) {
+    
+  }
+  else if (missing(taxon2) & missing(trait_type) {
+    
+  }
+  else if (!(missing(taxon2)|missing(taxon1)|missing(trait_type))) {
+    
+  }
+  else {
+    print("You have not entered any selection criteria")
+    break
+  }
+  if (){
+    
+  }
+  else {
+    
+  }
+  ## Some output of if else tree used to get subset of p and G
+  ##### Its got to take taxon 1 and 2, get the subset of the data from Z and then compare names against those in list 1 and 2 to extract the relevant matrices
+  return(modlist1,modlist2)
 }
