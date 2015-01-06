@@ -244,40 +244,49 @@ PthroughG<-function(dir, dir2) { ## dir is the directory where writeMatList has 
 #### Might be able to include taxons if I refer to the Matrix Index, and then create two subsets of the G mat and Pmat which match the selection.
 #### Taxon1 and 2 are as names in Pitcher's et al. and list1 and 2 are the list of P and G matrices to be selected from. The results should be a list of two list of matrices of equal length.
 ExtractTaxon<-function(taxon1,taxon2,list1,list2,trait_type) {
-  z<-read.csv("C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv",header=TRUE)
+  z<-read.csv("G:/GIThub/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv",header=TRUE,stringsAsFactors=FALSE)
   #### Various decision trees for the grepl commands to get an appropiate subset of MatrixIndex to work on.
   if (missing(trait_type)) {
-    
+    q<-z[grepl(taxon2,z[,7]),]
+    q2<-q[grepl(taxon1,q[,6]),]
   }
   else if (missing(taxon2)) {
-    
+    q<-z[grepl(taxon1,z[,6]),]
+    q2<-q[grepl(trait_type,q[,8]),]    
   }
   else if (missing(taxon1)) {
-    
+    q<-z[grepl(taxon2,z[,7]),]
+    q2<-q[grepl(trait_type),q[,8]),]    
   }
   else if (missing(taxon1) & missing(taxon2)) {
-    
+    q2<-z[grepl(trait_type,z[,8]),]    
   }
   else if (missing(taxon1) & missing(trait_type)) {
-    
+    q2<-z[grepl(taxon2,z[,7]),]   
   }
   else if (missing(taxon2) & missing(trait_type) {
-    
+    q2<-z[grepl(taxon1,z[,6]),]    
   }
   else if (!(missing(taxon2)|missing(taxon1)|missing(trait_type))) {
-    
+    q<-z[grepl(taxon2,z[,7]),]
+    q1<-q[grepl(trait_type,q[,8])]
+    q2<-q1[grepl(taxon1,q1[,6]),]    
   }
   else {
     print("You have not entered any selection criteria")
     break
   }
-  if (){
+  if (length(q2[,1]==0)){
+    print("Sorry, that set of taxons and trait type does not exist in this data")
+    return NULL
     
   }
-  else {
-    
+  else { ### Again usese implicit assumption of constant naming
+    modlist1<-list1[q2[,5]]
+    modlist2<-list2[q2[,5]] 
+    return(modlist1,modlist2)
   }
   ## Some output of if else tree used to get subset of p and G
   ##### Its got to take taxon 1 and 2, get the subset of the data from Z and then compare names against those in list 1 and 2 to extract the relevant matrices
-  return(modlist1,modlist2)
+
 }
