@@ -229,7 +229,7 @@ MaxnoTraits<- function(list) {
 #### Projection of P through G after making submatrices and standardising in some manner. ### There is an implicit assumption of equal length between the two lists
 PthroughG<-function(dir, dir2) { ## dir is the directory where writeMatList has written the new P matrices and dir2 is the dir containing the G matrices
   Pmat<-MatasList(dir)
-  Gmat<-MatasList(Gmat)
+  Gmat<-MatasList(dir2)
   ProjPG<-matrix(NA,nrow=length(Pmat),ncol=MaxnoTraits(Pmat))
   for (i in 1:length(Pmat)) {
     Psto<-Pmat[grepl(names(Pmat[i]),names(Gmat))]
@@ -284,9 +284,30 @@ ExtractTaxon<-function(taxon1,taxon2,list1,list2,trait_type) {
   else { ### Again usese implicit assumption of constant naming
     modlist1<-list1[q2[,5]]
     modlist2<-list2[q2[,5]] 
-    return(modlist1,modlist2)
+    return(list(modlist1=modlist1,modlist2=modlist2))
   }
   ## Some output of if else tree used to get subset of p and G
   ##### Its got to take taxon 1 and 2, get the subset of the data from Z and then compare names against those in list 1 and 2 to extract the relevant matrices
 
 }
+
+
+#### Create list of empty csv file to later be filled with pmatrices from paper. Named files are made based on OrdDatDes pmatrix column.
+#blank_csvs<-function(dir1,dir2) { #### "H:/OrdDatDes.csv"  changed directory of data due to permission issues
+#  z<-read.csv(dir1,header=TRUE,stringsAsFactors=FALSE)
+#  q<-z[z[,12]>0,] ### subset of lines with pmatrices
+#  for (i in 1:length(q[,1])) {
+#    setwd(dir2)
+#    write.csv(paste(q[i,1],".1.csv",sep=""),x=NULL)
+#    write.csv(paste(q[i,1],".2.csv",sep=""),x=NULL)
+#  }
+#}
+#
+#blank_csvs("H:/OrdDatDes.csv","C:/Users/s4284361/Documents/GitHub/Rproject/Pmatrices")
+
+
+
+##### Note that con1992 might not be suitable to use due to unclear source of correlation matrix from Pitcher's data
+##### Con2003 was not currently used due to Vp =Vg+Ve not matching the Vp mentioned and table, might be due to descrepancy in the degrees of freedom of each. Will attempt to address this tomorrow.
+#### Del1995 omitted autocorrelations, this leaves some blanks in the matrix, it appears Pitcher's replaced these with 0s. Instead I might remove those traits as adding those zeros might affect the results.
+### Kau2003 lacked information in matrix for the phenotypic correlations

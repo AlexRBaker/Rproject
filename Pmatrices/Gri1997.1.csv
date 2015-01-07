@@ -1,0 +1,5 @@
+size,development.time,orange.reflectance,red.reflectance
+1,-0.187,0.11,0.121
+-0.187,1,-0.369,-0.283
+0.11,-0.369,1,0.986
+0.121,-0.283,0.986,1

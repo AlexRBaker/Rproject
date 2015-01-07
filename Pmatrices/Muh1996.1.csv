@@ -1,0 +1,5 @@
+body.size,development.time,copula.duration,Flexibility.of.copula.duration
+1,0.015,-0.053,0.132
+0.015,1,-0.007,0.008
+-0.053,-0.007,1,0.012
+0.132,0.008,0.012,1
