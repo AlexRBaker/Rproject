@@ -311,3 +311,41 @@ ExtractTaxon<-function(taxon1,taxon2,list1,list2,trait_type) {
 ##### Con2003 was not currently used due to Vp =Vg+Ve not matching the Vp mentioned and table, might be due to descrepancy in the degrees of freedom of each. Will attempt to address this tomorrow.
 #### Del1995 omitted autocorrelations, this leaves some blanks in the matrix, it appears Pitcher's replaced these with 0s. Instead I might remove those traits as adding those zeros might affect the results.
 ### Kau2003 lacked information in matrix for the phenotypic correlations
+
+
+
+#### Function for creating a matrix index for the gathered Pmatrices which will be used to create all of the relevant submatrices for each corresponding G matrix.
+## This might be done in two steps, first create an index for the Pmatrices, enter the relevant G matrice manually and then extract a subset of Pitcher's matrixindex to be able to select by taxon and trait_type.
+
+Pmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproject/Pmatrices"
+  p<-list.files(path=dir)
+  p<-p[grepl(".csv",p)] ### Takes only the csv files
+  q<-read.csv("H:/OrdDatDes.csv",header=TRUE,stringsAsFactors=FALSE) ## Reads in orderdatamatrix
+  z<-data.frame(matrix(NA,nrow=length(p),ncol=length(q)))
+  for (i in 1:length(p)) {
+    z[i,]<-q[grepl(substr(p[[i]],1,7),q[,1]),]
+    z[i,1]<-substr(p[[i]],1,9)
+  }
+  nam<-names(q)
+  nam[1]<-"Pmatrix"
+  names(z)<-nam
+  z$GmatId<-rep(NA,length(z[,16]))
+  setwd("C:/Users/s4284361/Documents/GitHub/Rproject")
+    write.csv("Pmatindex.csv",x=z,row.names=FALSE)
+}
+
+##### Function which checks GmatId, get trait_type from MatrixIndexFinal and appends it as another column to PMatindex
+Trait_append<-function(dir1,dir2) {
+  q<-read.csv(dir1,stringsAsFactors=FALSE) ###Pmatindex
+  l<-read.csv(dir2,stringsAsFactors=FALSE) ####MatrixINdexFinal 
+  q$trait_type<-rep(NA,length(q[,1]))
+  for (i in 1:length(q[,1])) {
+    q[i,18]<-l[grepl(q[i,17],l[,5])][8]
+  }
+  setwd("C:/Users/s4284361/Documents/GitHub/Rproject")
+  write.csv("PmatIndex2.csv",x=q)
+}
+###### New Submatrix function which check GmatId to compare Pmat to that Gmat
+Psubmatcomp<-function(dir1,dir2) {
+  
+}
