@@ -1,1 +1,5 @@
-""
+femur.length,ear.length,pulse.rate.threshold,development.time
+1,0.48,-0.08,-0.02
+0.48,1,-0.15,0.334
+-0.08,-0.15,1,0.14
+-0.02,0.334,0.14,1
