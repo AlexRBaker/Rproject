@@ -337,18 +337,25 @@ Pmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproject/
 ##### Function which checks GmatId, get trait_type from MatrixIndexFinal and appends it as another column to PMatindex
 
 ### Pmatindex needs to be modified a bit before this is used 8/01/15 11:18 a.m 
-
+### Pmatindex modification made 8/01/15 11:54 a.m
+# At work comp dir1<-"C:/Users/s4284361/Documents/GitHub/Rproject/Pmatindex.csv"
+# at work comp dir 2<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv"
 Trait_append<-function(dir1,dir2) {
   q<-read.csv(dir1,stringsAsFactors=FALSE) ###Pmatindex
   l<-read.csv(dir2,stringsAsFactors=FALSE) ####MatrixINdexFinal 
-  q$trait_type<-rep(NA,length(q[,1]))
+  q$trait.type<-rep(NA,length(q[,1]))
   for (i in 1:length(q[,1])) {
-    q[i,18]<-l[grepl(q[i,17],l[,5])][8]
+    q[i,18]<-l[grepl(q[i,17],l[,5]),][8]
   }
   setwd("C:/Users/s4284361/Documents/GitHub/Rproject")
-  write.csv("PmatIndex2.csv",x=q)
+  write.csv("PmatIndex.csv",x=q,row.names=FALSE)
 }
+### Appends trait.type and overwrite old Pmatindex
 ###### New Submatrix function which check GmatId to compare Pmat to that Gmat
-Psubmatcomp<-function(dir1,dir2) {
+Psubmatcomp<-function(dir1,dir2,dir3) {
+### Dir1 should lead to the new folder where matrices will be added
+  ## dir 2 should lead to the folder of Gmatrices
+    ##dir3 should lead to PmatIndex
   
 }
+
