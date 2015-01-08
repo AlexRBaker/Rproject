@@ -335,6 +335,9 @@ Pmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproject/
 }
 
 ##### Function which checks GmatId, get trait_type from MatrixIndexFinal and appends it as another column to PMatindex
+
+### Pmatindex needs to be modified a bit before this is used 8/01/15 11:18 a.m 
+
 Trait_append<-function(dir1,dir2) {
   q<-read.csv(dir1,stringsAsFactors=FALSE) ###Pmatindex
   l<-read.csv(dir2,stringsAsFactors=FALSE) ####MatrixINdexFinal 
