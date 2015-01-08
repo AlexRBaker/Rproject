@@ -1,0 +1,4 @@
+"leaf.absorptance.pre.drought","leaf.absorptance.early.drought","leaf.absorptance.mid.drought"
+1,0.144,-0.051
+0.144,1,0.55
+-0.051,0.55,1

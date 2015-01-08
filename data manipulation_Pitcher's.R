@@ -332,13 +332,6 @@ Trait_append<-function(dir1,dir2) {
 }
 ### Appends trait.type and overwrite old Pmatindex
 ###### New Submatrix function which check GmatId to compare Pmat to that Gmat
-Psubmatcomp<-function(dir1,dir2,dir3) {
-### Dir1 should lead to the new folder where matrices will be added
-  ## dir 2 should lead to the folder of Gmatrices
-    ##dir3 should lead to PmatIndex
-  
-}
-
 
 #### Counter function
 matdimcount<-function(list) {
@@ -391,33 +384,38 @@ Psubmats<-function(dir1,dir2,dir3,dir4) { ### dir1 - Pmatrices , Gmatrices, dir3
   modmatsto=list()
   p<-MatasList(dir1) ## Creates list of P matrices
   q<-MatfromInd(dir2,dir3) ### creates list of relevant G matrices entreted in Pmatindex
+  q<-q[!duplicated(names(q))]
   z<-read.csv(dir3,stringsAsFactors=FALSE)
   for (i in 1:length(z[,1])) {
     Pmat<-p[grepl(z[i,1],names(p))]
     Gmat<-q[grepl(z[i,17],names(q))] ## takes substring from dir1 and compare and extract matrice with matching name from dir 2
     matr<-data.frame(matrix(0,nrow=length(Pmat[[1]]),ncol=length(Gmat[[1]])))
     colnames(matr)<-names(Gmat[[1]])
-    colcount<-1
     colnosto<-numeric(length(Gmat[[1]]))
-    for (L in 1:length(Pmat[[1]])) {
-        pnam<-gsub(".","",names(Pmat[[1]]),fixed=TRUE)
-        gnam<-gsub(".","",names(Gmat[[1]]),fixed=TRUE)
-        for (m in 1:length(gnam)) {
-          if (sum(grepl(pnam[L],gnam,ignore.case=TRUE))>0) {
-            matr[,colcount]<-Pmat[[1]][,grepl(pnam[L],gnam,ignore.case=TRUE)]
-            colnames(matr)[colcount]<-names(Gmat[[1]])[grepl(pnam[L],gnam,ignore.case=TRUE)] ## name traits in matrix
-            colnosto[colcount]<-L
-            colcount<-colcount+1
-            }
-        }
-
+    pnam<-gsub(".","",names(Pmat[[1]]),fixed=TRUE)
+    gnam<-gsub(".","",names(Gmat[[1]]),fixed=TRUE)
+    for (m in 1:length(Gmat[[1]])) {
+      if (sum(grepl(gnam[m],pnam,ignore.case=TRUE))==1) {
+        matr[,m]<-Pmat[[1]][,grepl(gnam[m],pnam,ignore.case=TRUE)]
+        colnosto[m]<-match(TRUE,grepl(gnam[m],pnam,ignore.case=TRUE))
+      }
+      else if ((sum(grepl(gnam[m],pnam,ignore.case=TRUE))>1)) {
+        colno<-match(gnam[m],pnam)
+        matr[,m]<-Pmat[[1]][,colno]
+        colnosto[m]<-match(gnam[m],pnam)
+      }
     }
     matr<-matr[colnosto,]
     modmatsto[[names(Gmat)]]<-matr   #### name matrix with corresponding identifier from other list
+    }
+  for (j in 1:length(modmatsto)) {
+    names(modmatsto)[j]<-paste(names(modmatsto)[j],".csv",sep="")
   }
   WriteMatList(modmatsto, dir4)
   return (modmatsto)
 }
+
+
 
 #### need a function to extract a submatrix from a larger matrix such that it makes the variables in another matrix
 ### for storage current grepl command grepl(colnames(mno[[2]][[1]])[1],colnames(Q[[1]]),ignore.case=TRUE)

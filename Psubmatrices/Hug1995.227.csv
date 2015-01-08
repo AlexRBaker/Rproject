@@ -1,0 +1,4 @@
+"slope.of.mortality","intercept.of.mortality","mean.longevity"
+1,-0.442,0.011
+-0.442,1,-0.251
+0.011,-0.251,1
