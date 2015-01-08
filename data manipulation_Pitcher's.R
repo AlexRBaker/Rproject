@@ -132,12 +132,12 @@ dir2<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CS
 ## Creates list of pathfiles for files ina folder.
 path_file <- function(dir1,dir2) {
   if (missing(dir2)) {
-    p<-paste(dir1,list.files(path=dir1),sep="")
+    p<-paste(dir1,list.files(path=dir1),sep="/")
     return (list(dir1=p))
   }
   else {
-  q<-paste(dir2,list.files(path=dir2),sep="")
-  p<-paste(dir1,list.files(path=dir1),sep="")
+  q<-paste(dir2,list.files(path=dir2),sep="/")
+  p<-paste(dir1,list.files(path=dir1),sep="/")
   return (list(dir1=p,dir2=q))
   }
 }
@@ -189,27 +189,7 @@ return (list(matrix_listc=matrix_listc,matrix_list=matrix_list))
 }
 }
 
-#### need a function to extract a submatrix from a larger matrix such that it makes the variables in another matrix
-Psubmats<-function(dir1,dir2) {
-  ### It is assumed dir1 is the larger matrix and dir 2 the list of smaller ones
-  modmatsto=list()
-  count=0
-  p<-MatasList(dir1,dir2)
-  for (c in p[[1]]) {
-    Q<-p[[2]][grepl(substr(names(c),1,7),names(p[[2]]))] ## takes substring from dir1 and compare and extract matrice with matching name frmo dir 2
-    for (z in Q) {
-      matr<-##blank matrix
-      for (i in z) {
-        matr[,i]<-c[,grepl(colnames(z)[i],gsub(".","",colnames(c),fixed=TRUE),ignore.case=TRUE)]
-        colnames(matr)[i]<-colnames(Q[[2]])[1] ## name traits in matrix
-      }
-      modmatsto[[paste(names(z))]]<-matr   #### name matrix with corresponding identifier from other list
-    }
-  }
-  return (modmatsto)
-}
-### for storage current grepl command grepl(colnames(mno[[2]][[1]])[1],colnames(Q[[1]]),ignore.case=TRUE)
-### modified to grepl(gsub(".","",colnames(mno[[2]][[1]])[3],fixed=TRUE),colnames(Q[[1]]),ignore.case=TRUE) to counter different header style
+
 #### Write csv files from list function with appropiate name
 WriteMatList<-function(list,dir) {
   for (i in 1:length(list)) {
@@ -359,3 +339,86 @@ Psubmatcomp<-function(dir1,dir2,dir3) {
   
 }
 
+
+#### Counter function
+matdimcount<-function(list) {
+  p<-rep(0,length(list))
+    for (i in 1:length(list)) {
+      p[i]<-length(list[[i]][[1]])
+    }
+    q<-rep(0,max(p))
+    z<-rep(0,max(p))
+    for (i in 1:max(p)) {
+      q[i]<-sum(p>=i)
+      z[i]<-sum(p==i)
+    }
+    return (list(DimNum=p,DimGre=q,DimEqu=z))
+}
+
+
+#### Now need selecter function to extract relevant Gmatrices based on Pmatindex
+MatfromInd<-function(dir1,dir2){ ## dir1 <- cor matrix folder ##dir 2 PmatIndex file_file
+    q<-path_file(dir1)
+    setwd(dir1)
+    matrices <- dir()
+    no.mats <- length(q[[1]][grepl(".csv", q[[1]])])
+    matrix_list <- list()
+    
+    # this loop reads in each matrix from the folder of .csv files and writes
+    # them into a list
+    for (i in 1:no.mats) {
+      matrix_list[[i]] <- read.csv(q[[1]][grepl(".csv", q[[1]])][i])
+    }
+    names(matrix_list) <- matrices[grepl(".csv",q[[1]])]
+    z<-read.csv(dir2,stringsAsFactors=FALSE)
+    GPmat<-list()
+    for (i in 1:length(z[,17])) {
+      GPmat[[i]]<-matrix_list[grepl(z[i,17],names(matrix_list))][[1]]
+      names(GPmat)[i]<-z[i,17]
+    }
+    return (GPmat) ### return list of list of list
+}
+
+##### submatrix function redone to accept paired data based on PmatIndex
+
+### Current directories dir1<-"C:/Users/s4284361/Documents/GitHub/Rproject/Pmatrices"
+# dir2<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs"
+#dir3<-"C:/Users/s4284361/Documents/GitHub/Rproject/Pmatindex.csv"
+#dir4<-"C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices"
+
+Psubmats<-function(dir1,dir2,dir3,dir4) { ### dir1 - Pmatrices , Gmatrices, dir3-Pmatindex, dir4-storagelocation
+  ### It is assumed dir1 is the larger matrix and dir 2 the list of smaller ones
+  modmatsto=list()
+  p<-MatasList(dir1) ## Creates list of P matrices
+  q<-MatfromInd(dir2,dir3) ### creates list of relevant G matrices entreted in Pmatindex
+  z<-read.csv(dir3,stringsAsFactors=FALSE)
+  for (i in 1:length(z[,1])) {
+    Pmat<-p[grepl(z[i,1],names(p))]
+    Gmat<-q[grepl(z[i,17],names(q))] ## takes substring from dir1 and compare and extract matrice with matching name from dir 2
+    matr<-data.frame(matrix(0,nrow=length(Pmat[[1]]),ncol=length(Gmat[[1]])))
+    colnames(matr)<-names(Gmat[[1]])
+    colcount<-1
+    colnosto<-numeric(length(Gmat[[1]]))
+    for (L in 1:length(Pmat[[1]])) {
+        pnam<-gsub(".","",names(Pmat[[1]]),fixed=TRUE)
+        gnam<-gsub(".","",names(Gmat[[1]]),fixed=TRUE)
+        for (m in 1:length(gnam)) {
+          if (sum(grepl(pnam[L],gnam,ignore.case=TRUE))>0) {
+            matr[,colcount]<-Pmat[[1]][,grepl(pnam[L],gnam,ignore.case=TRUE)]
+            colnames(matr)[colcount]<-names(Gmat[[1]])[grepl(pnam[L],gnam,ignore.case=TRUE)] ## name traits in matrix
+            colnosto[colcount]<-L
+            colcount<-colcount+1
+            }
+        }
+
+    }
+    matr<-matr[colnosto,]
+    modmatsto[[names(Gmat)]]<-matr   #### name matrix with corresponding identifier from other list
+  }
+  WriteMatList(modmatsto, dir4)
+  return (modmatsto)
+}
+
+#### need a function to extract a submatrix from a larger matrix such that it makes the variables in another matrix
+### for storage current grepl command grepl(colnames(mno[[2]][[1]])[1],colnames(Q[[1]]),ignore.case=TRUE)
+### modified to grepl(gsub(".","",colnames(mno[[2]][[1]])[3],fixed=TRUE),colnames(Q[[1]]),ignore.case=TRUE) to counter different header style
