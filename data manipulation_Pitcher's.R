@@ -223,8 +223,8 @@ MaxnoTraits<- function(list) {
 
 #### Might be able to include taxons if I refer to the Matrix Index, and then create two subsets of the G mat and Pmat which match the selection.
 #### Taxon1 and 2 are as names in Pitcher's et al. and list1 and 2 are the list of P and G matrices to be selected from. The results should be a list of two list of matrices of equal length.
-ExtractTaxon<-function(taxon1,taxon2,list1,list2,trait_type) {
-  z<-read.csv("G:/GIThub/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv",header=TRUE,stringsAsFactors=FALSE)
+"ExtractTaxon<-function(taxon1,taxon2,list1,list2,trait_type) {
+  z<-read.csv(""G:/GIThub/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv"",header=TRUE,stringsAsFactors=FALSE)
   #### Various decision trees for the grepl commands to get an appropiate subset of MatrixIndex to work on.
   if (missing(trait_type)) {
     q<-z[grepl(taxon2,z[,7]),]
@@ -253,11 +253,11 @@ ExtractTaxon<-function(taxon1,taxon2,list1,list2,trait_type) {
     q2<-q1[grepl(taxon1,q1[,6]),]    
   }
   else {
-    print("You have not entered any selection criteria")
+    print(""You have not entered any selection criteria"")
     break
   }
   if (length(q2[,1]==0)){
-    print("Sorry, that set of taxons and trait type does not exist in this data")
+    print(""Sorry, that set of taxons and trait type does not exist in this data"")
     return NULL
     
   }
@@ -269,7 +269,7 @@ ExtractTaxon<-function(taxon1,taxon2,list1,list2,trait_type) {
   ## Some output of if else tree used to get subset of p and G
   ##### Its got to take taxon 1 and 2, get the subset of the data from Z and then compare names against those in list 1 and 2 to extract the relevant matrices
 
-}
+}"
 
 
 #### Create list of empty csv file to later be filled with pmatrices from paper. Named files are made based on OrdDatDes pmatrix column.
@@ -382,7 +382,7 @@ MatfromInd<-function(dir1,dir2){ ## dir1 <- cor matrix folder ##dir 2 PmatIndex 
 Psubmats<-function(dir1,dir2,dir3,dir4) { ### dir1 - Pmatrices , Gmatrices, dir3-Pmatindex, dir4-storagelocation
   ### It is assumed dir1 is the larger matrix and dir 2 the list of smaller ones
   modmatsto=list()
-  p<-MatasList(dir1) ## Creates list of P matrices
+  p<-MatasList(dir1)## Creates list of P  matrices
   q<-MatfromInd(dir2,dir3) ### creates list of relevant G matrices entreted in Pmatindex
   q<-q[!duplicated(names(q))]
   z<-read.csv(dir3,stringsAsFactors=FALSE)
@@ -419,10 +419,13 @@ Psubmats<-function(dir1,dir2,dir3,dir4) { ### dir1 - Pmatrices , Gmatrices, dir3
 ### modified to grepl(gsub(".","",colnames(mno[[2]][[1]])[3],fixed=TRUE),colnames(Q[[1]]),ignore.case=TRUE) to counter different header style
 
 ##### Need to develop and change P through G function to accept new data
-
+### takes Psubmatrices and turns all of them into correlation matrices
+cor<-MatasList(dir4)
+cor<-listcov2cor(cor)
+WriteMatList(cor,dir4)
+###
 PthroughG<-function(dir4,dir2,dir3) { ## dir1 is the directory of P submatrices and dir2 is the dir containing the G matrices
   Pmats<-MatasList(dir4)
-  Pmats<-listcov2cor(Pmats)
   Gmats<-MatfromInd(dir2,dir3) ### creates list of relevant G matrices entreted in Pmatindex
   Gmats<-Gmats[!duplicated(names(Gmats))]
   Gmats<-Gmats[sort(names(Gmats))]
@@ -439,7 +442,7 @@ PthroughG<-function(dir4,dir2,dir3) { ## dir1 is the directory of P submatrices 
     rownames(ProjPG)[i]<-names(Gmats[i])
     rownames(Peigsto)[i]<-names(Gmats[i])
     rownames(Geigsto)[i]<-names(Gmats[i])
-    for (j in 1:length(Psto[[1]])){
+    for (j in 1:length(Psto[[1]][,1])){
       ProjPG[i,j]<-t((eigen(Psto[[1]])$vectors[,j]))%*%as.matrix(Gsto[[1]])%*%(eigen(Psto[[1]])$vectors[,j])
       Peigsto[i,j]<-eigen(Psto[[1]])$values[j]
       Geigsto[i,j]<-eigen(Gsto[[1]])$values[j]
@@ -456,7 +459,8 @@ listcov2cor<-function(list2) {
       var<-diag(as.matrix(list2[[i]]))
       for (j in 1:length(list2[[i]])) {
         for (k in 1:length(list2[[i]])) {
-          varmat[j,k]<-sqrt(var[j]*var[k])
+          varmat[j,k]<-sqrt(var[j])*sqrt(var[k])
+      
         }
       }
       list2[[names(list2[i])]]<-as.matrix(list2[[i]])/varmat
@@ -478,10 +482,10 @@ SPeig<-data.frame(matrix(NA,nrow=length(ProjPG[,1]),ncol=size))
 SGeig<-data.frame(matrix(NA,nrow=length(ProjPG[,1]),ncol=size))
 counter<-1
   for (i in 1:length(ProjPG[,1])){
-    if (is.na(match(NA,data[[1]][i,]))) {
+    if (is.na(match(NA,ProjPG[i,]))) {
       
     }
-    else if (match(NA,data[[1]][i,])==(size+1)) {
+    else if (match(NA,ProjPG[i,])==(size+1)) {
       SProj[counter,]<-ProjPG[i,1:size]
       SPeig[counter,]<-Peigsto[i,1:size]
       SGeig[counter,]<-Geigsto[i,1:size]
@@ -509,6 +513,10 @@ boxplot(SiPtG[[2]],add=TRUE, at=1.5:(6+0.5), boxwex=0.4,xaxt='n')
 boxplot(FiPtG[[2]],add=TRUE, at=1.5:(5+0.5), boxwex=0.4,xaxt='n')
 boxplot(FoPtG[[2]],add=TRUE, at=1.5:(4+0.5), boxwex=0.4,xaxt='n')
 
+boxplot(FiPtG[[2]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Phenotypic variance")
+boxplot(FiPtG[[3]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Genetic variance")
+boxplot(FiPtG[[1]],col="grey",boxwex=0.4,xlab="Eigenvector",ylab="Projection of P through G")
+
 
 boxplot(SePtG[[3]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Genetic variance")
 boxplot(SiPtG[[3]],add=TRUE, at=1.5:(6+0.5), boxwex=0.4,xaxt='n')
@@ -520,9 +528,9 @@ boxplot(SiPtG[[1]],add=TRUE, at=1.5:(6+0.5), boxwex=0.4,xaxt='n')
 boxplot(FiPtG[[1]],add=TRUE, at=1.5:(5+0.5), boxwex=0.4,xaxt='n')
 boxplot(FoPtG[[1]],add=TRUE, at=1.5:(4+0.5), boxwex=0.4,xaxt='n')
 
-hist(as.matrix(FoPtG[[1]]))
-hist(as.matrix(FoPtG[[2]]))
-hist(as.matrix(FoPtG[[3]]))
+hist(as.matrix(FiPtG[[1]]))
+hist(as.matrix(FiPtG[[2]]))
+hist(as.matrix(FiPtG[[3]]))
 
 
 
