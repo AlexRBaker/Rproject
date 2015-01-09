@@ -207,19 +207,19 @@ MaxnoTraits<- function(list) {
   return(q)
 }
 #### Projection of P through G after making submatrices and standardising in some manner. ### There is an implicit assumption of equal length between the two lists
-PthroughG<-function(dir, dir2) { ## dir is the directory where writeMatList has written the new P matrices and dir2 is the dir containing the G matrices
-  Pmat<-MatasList(dir)
-  Gmat<-MatasList(dir2)
-  ProjPG<-matrix(NA,nrow=length(Pmat),ncol=MaxnoTraits(Pmat))
-  for (i in 1:length(Pmat)) {
-    Psto<-Pmat[grepl(names(Pmat[i]),names(Gmat))]
-    Gsto<-Gmat[grepl(names(Pmat[i]),names(Gmat))]
-    for (j in 1:length(Psto[[1]][1,])){
-      ProjPG[i,j]<-t((eigen(Psto[[1]])$vectors[,j]))%*%Gsto[[1]]%*%(eigen(Psto[[1]])$vectors[,j])
-    }
-  }
-  return(ProjPG)
-}
+##PthroughG<-function(dir, dir2) { ## dir is the directory where writeMatList has written the new P matrices and dir2 is the dir containing the G matrices
+  ##Pmat<-MatasList(dir)
+  ##Gmat<-MatasList(dir2)
+  ##ProjPG<-matrix(NA,nrow=length(Pmat),ncol=MaxnoTraits(Pmat))
+  ##for (i in 1:length(Pmat)) {
+    ##Psto<-Pmat[grepl(names(Pmat[i]),names(Gmat))]
+    ##Gsto<-Gmat[grepl(names(Pmat[i]),names(Gmat))]
+    ##for (j in 1:length(Psto[[1]][1,])){
+      ##ProjPG[i,j]<-t((eigen(Psto[[1]])$vectors[,j]))%*%Gsto[[1]]%*%(eigen(Psto[[1]])$vectors[,j])
+    ##}
+  ##}
+  ##return(ProjPG)
+##}
 
 #### Might be able to include taxons if I refer to the Matrix Index, and then create two subsets of the G mat and Pmat which match the selection.
 #### Taxon1 and 2 are as names in Pitcher's et al. and list1 and 2 are the list of P and G matrices to be selected from. The results should be a list of two list of matrices of equal length.
@@ -414,9 +414,32 @@ Psubmats<-function(dir1,dir2,dir3,dir4) { ### dir1 - Pmatrices , Gmatrices, dir3
   WriteMatList(modmatsto, dir4)
   return (modmatsto)
 }
-
-
-
 #### need a function to extract a submatrix from a larger matrix such that it makes the variables in another matrix
 ### for storage current grepl command grepl(colnames(mno[[2]][[1]])[1],colnames(Q[[1]]),ignore.case=TRUE)
 ### modified to grepl(gsub(".","",colnames(mno[[2]][[1]])[3],fixed=TRUE),colnames(Q[[1]]),ignore.case=TRUE) to counter different header style
+
+##### Need to develop and change P through G function to accept new data
+
+PthroughG<-function(dir4,dir2,dir3) { ## dir1 is the directory of P submatrices and dir2 is the dir containing the G matrices
+  Pmats<-MatasList(dir4)
+  Gmats<-MatfromInd(dir2,dir3) ### creates list of relevant G matrices entreted in Pmatindex
+  Gmats<-Gmats[!duplicated(names(Gmats))]
+  Gmats<-Gmats[sort(names(Gmats))]
+  
+  ProjPG<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
+  Peigsto<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
+  Geigsto<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
+  for (i in 1:length(Pmats)) {
+    Psto<-Pmats[grepl(names(Gmats[i]),names(Pmats))]
+    Gsto<-Gmats[grepl(names(Gmats[i]),names(Pmats))]
+    for (j in 1:length(Psto[[1]])){
+      ProjPG[i,j]<-t((eigen(Psto[[1]])$vectors[,j]))%*%as.matrix(Gsto[[1]])%*%(eigen(Psto[[1]])$vectors[,j])
+      Peigsto[i,j]<-eigen(Psto[[1]])$values[j]
+      Geigsto[i,j]<-eigen(Gsto[[1]])$values[j]
+    }
+  }
+  return(list(ProjPG=ProjPG,Peigsto=Peigsto,Geigsto=Geigsto))
+}
+
+### testing if matrices are symmetric due to error in cov2cor function
+
