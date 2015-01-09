@@ -136,7 +136,7 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory) {
   }
   mypath <- file.path(paste(directory),paste("PGP","_boxplot" ,paste("_p",p,"n",n,"r",r,"k",k,sep=""), ".pdf", sep = ""))
   pdf(file=mypath)
-  boxplot(ProjPG,col="grey",boxwex=0.4,xlab="Eigenvector",Ylab="Projection of P through G")
+  boxplot(ProjPG,col="grey",boxwex=0.4,xlab="Eigenvector",ylab="Projection of P through G")
   abline(0,0,lty=2)
   dev.off()
     

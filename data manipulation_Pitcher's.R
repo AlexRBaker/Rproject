@@ -422,16 +422,23 @@ Psubmats<-function(dir1,dir2,dir3,dir4) { ### dir1 - Pmatrices , Gmatrices, dir3
 
 PthroughG<-function(dir4,dir2,dir3) { ## dir1 is the directory of P submatrices and dir2 is the dir containing the G matrices
   Pmats<-MatasList(dir4)
+  Pmats<-listcov2cor(Pmats)
   Gmats<-MatfromInd(dir2,dir3) ### creates list of relevant G matrices entreted in Pmatindex
   Gmats<-Gmats[!duplicated(names(Gmats))]
   Gmats<-Gmats[sort(names(Gmats))]
-  
   ProjPG<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
   Peigsto<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
   Geigsto<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
+  nullnames<-rep(0,length(Pmats))
+  rownames(ProjPG)<-nullnames
+  rownames(Peigsto)<-nullnames
+  rownames(Geigsto)<-nullnames
   for (i in 1:length(Pmats)) {
     Psto<-Pmats[grepl(names(Gmats[i]),names(Pmats))]
     Gsto<-Gmats[grepl(names(Gmats[i]),names(Pmats))]
+    rownames(ProjPG)[i]<-names(Gmats[i])
+    rownames(Peigsto)[i]<-names(Gmats[i])
+    rownames(Geigsto)[i]<-names(Gmats[i])
     for (j in 1:length(Psto[[1]])){
       ProjPG[i,j]<-t((eigen(Psto[[1]])$vectors[,j]))%*%as.matrix(Gsto[[1]])%*%(eigen(Psto[[1]])$vectors[,j])
       Peigsto[i,j]<-eigen(Psto[[1]])$values[j]
@@ -441,5 +448,81 @@ PthroughG<-function(dir4,dir2,dir3) { ## dir1 is the directory of P submatrices 
   return(list(ProjPG=ProjPG,Peigsto=Peigsto,Geigsto=Geigsto))
 }
 
-### testing if matrices are symmetric due to error in cov2cor function
+### Function to manually do cov2cor since cov2cor does nto appear to work.
+listcov2cor<-function(list2) {
+  for (i in 1:length(list2)) {
+    if (sum(diag(as.matrix(list2[[i]])))!=length(list2[[i]])) {
+      varmat<-matrix(0,nrow=length(list2[[i]]),ncol=length(list2[[i]]))
+      var<-diag(as.matrix(list2[[i]]))
+      for (j in 1:length(list2[[i]])) {
+        for (k in 1:length(list2[[i]])) {
+          varmat[j,k]<-sqrt(var[j]*var[k])
+        }
+      }
+      list2[[names(list2[i])]]<-as.matrix(list2[[i]])/varmat
+    }
+    else {
+      
+    }
+  }
+  return (list2)
+}
+
+###### Function to extract only the data off certain length based on the no . of NAs in the row. Function is not going to be made scalable.
+sizeddata<-function(list2,size) {
+ProjPG<-list2[[1]]
+Peigsto<-list2[[2]]
+Geigsto<-list2[[3]]
+SProj<-data.frame(matrix(NA,nrow=length(ProjPG[,1]),ncol=size))
+SPeig<-data.frame(matrix(NA,nrow=length(ProjPG[,1]),ncol=size))
+SGeig<-data.frame(matrix(NA,nrow=length(ProjPG[,1]),ncol=size))
+counter<-1
+  for (i in 1:length(ProjPG[,1])){
+    if (is.na(match(NA,data[[1]][i,]))) {
+      
+    }
+    else if (match(NA,data[[1]][i,])==(size+1)) {
+      SProj[counter,]<-ProjPG[i,1:size]
+      SPeig[counter,]<-Peigsto[i,1:size]
+      SGeig[counter,]<-Geigsto[i,1:size]
+      counter<-counter+1
+    }
+    else {
+      
+    }
+  }
+SProj<-SProj[1:(counter-1),]
+SPeig<-SPeig[1:(counter-1),]
+SGeig<-SGeig[1:(counter-1),]
+return(list(SProj,SPeig,SGeig))
+}
+
+#####Trialling final graph
+PtG<-PthroughG(dir4,dir2,dir3)
+FiPtG<-sizeddata(PtG,5)
+SiPtG<-sizeddata(PtG,6)
+FoPtG<-sizeddata(PtG,4)
+SePtG<-sizeddata(PtG,7)
+
+boxplot(SePtG[[2]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Phenotypic variance")
+boxplot(SiPtG[[2]],add=TRUE, at=1.5:(6+0.5), boxwex=0.4,xaxt='n')
+boxplot(FiPtG[[2]],add=TRUE, at=1.5:(5+0.5), boxwex=0.4,xaxt='n')
+boxplot(FoPtG[[2]],add=TRUE, at=1.5:(4+0.5), boxwex=0.4,xaxt='n')
+
+
+boxplot(SePtG[[3]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Genetic variance")
+boxplot(SiPtG[[3]],add=TRUE, at=1.5:(6+0.5), boxwex=0.4,xaxt='n')
+boxplot(FiPtG[[3]],add=TRUE, at=1.5:(5+0.5), boxwex=0.4,xaxt='n')
+boxplot(FoPtG[[3]],add=TRUE, at=1.5:(4+0.5), boxwex=0.4,xaxt='n')
+
+boxplot(SePtG[[1]],col="grey",boxwex=0.4,xlab="Eigenvector",ylab="Projection of P through G")
+boxplot(SiPtG[[1]],add=TRUE, at=1.5:(6+0.5), boxwex=0.4,xaxt='n')
+boxplot(FiPtG[[1]],add=TRUE, at=1.5:(5+0.5), boxwex=0.4,xaxt='n')
+boxplot(FoPtG[[1]],add=TRUE, at=1.5:(4+0.5), boxwex=0.4,xaxt='n')
+
+hist(as.matrix(FoPtG[[1]]))
+hist(as.matrix(FoPtG[[2]]))
+hist(as.matrix(FoPtG[[3]]))
+
+
 
