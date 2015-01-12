@@ -1,0 +1,6 @@
+"fore.femur.width","fore.femur.length","abdomen.length","mid.femur.length","gential.length"
+1,0.69,0.3,0.41,-0.02
+0.69,1,0.32,0.72,0
+0.3,0.32,1,0.26,-0.02
+0.41,0.72,0.26,1,-0.05
+-0.02,0,-0.02,-0.05,1

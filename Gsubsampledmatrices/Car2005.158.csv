@@ -1,0 +1,6 @@
+"light.saturated.photosynthetic.rate","water.use.efficiency","chlorophyll.concentration","Rosette.size","specific.leaf.area"
+1,0.177,0.772,-0.177,0.149
+0.177,1,0.532,-0.833,-0.351
+0.772,0.532,1,-0.473,-0.023
+-0.177,-0.833,-0.473,1,-0.107
+0.149,-0.351,-0.023,-0.107,1

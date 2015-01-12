@@ -148,54 +148,57 @@ if (missing(dir2)) {
   q<-path_file(dir1)
   setwd(dir1)
   matrices <- dir()
-  no.mats <- length(q[[1]][!grepl("list", q[[1]])])
+  no.mats <- length(q[[1]][grepl("csv", q[[1]])])
   matrix_list <- list()
   
   # this loop reads in each matrix from the folder of .csv files and writes
   # them into a list
   for (i in 1:no.mats) {
-    matrix_list[[i]] <- read.csv(q[[1]][!grepl("list", q[[1]])][i])
+    matrix_list[[i]] <- read.csv(q[[1]][grepl("csv", q[[1]])][i])
   }
-  names(matrix_list) <- matrices[!grepl("list",q[[1]])]
+  names(matrix_list) <- matrices[grepl("csv",q[[1]])]
   return(matrix_list)
 }  
 else {
 q<-path_file(dir1,dir2)
 setwd(dir1)
 matrices <- dir()
-no.mats <- length(q[[1]][!grepl("list", q[[1]])])
+no.mats <- length(q[[1]][grepl("csv", q[[1]])])
 matrix_list <- list()
 
 # this loop reads in each matrix from the folder of .csv files and writes
 # them into a list
 for (i in 1:no.mats) {
-  matrix_list[[i]] <- read.csv(q[[1]][!grepl("list", q[[1]])][i])
+  matrix_list[[i]] <- read.csv(q[[1]][grepl("csv", q[[1]])][i])
 }
-names(matrix_list) <- matrices[!grepl("list",q[[1]])]
+names(matrix_list) <- matrices[grepl("csv",q[[1]])]
 
 #### Now for correlation matrices
 ## From Pitcher's, create list of matrices for use in R.
 setwd(dir2)
 matricesc <- dir()
-no.matsc <- length(q[[2]][!grepl("list", q[[2]])])
+no.matsc <- length(q[[2]][grepl("csv", q[[2]])])
 matrix_listc <- list()
 # this loop reads in each matrix from the folder of .csv files and writes
 # them into a list
 for (i in 1:no.matsc) {
-  matrix_listc[[i]] <- read.csv(q[[2]][!grepl("list", q[[2]])][i])
+  matrix_listc[[i]] <- read.csv(q[[2]][grepl("csv", q[[2]])][i])
 }
-names(matrix_listc) <- matricesc[!grepl("list",q[[2]])]
+names(matrix_listc) <- matricesc[grepl("csv",q[[2]])]
 return (list(matrix_listc=matrix_listc,matrix_list=matrix_list))
 }
 }
 
 
 #### Write csv files from list function with appropiate name
+
 WriteMatList<-function(list,dir) {
   for (i in 1:length(list)) {
     setwd(dir)
     write.csv(file=names(list[i]), x=list[[i]],row.names=FALSE)
   }
+  
+  
 }
 
 MaxnoTraits<- function(list) {
@@ -500,37 +503,268 @@ SPeig<-SPeig[1:(counter-1),]
 SGeig<-SGeig[1:(counter-1),]
 return(list(SProj,SPeig,SGeig))
 }
+#### Creating an index document for Psubmatrices
+
+Psubmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices"
+  p<-list.files(path=dir)
+  p<-p[grepl(".csv",p)] ### Takes only the csv files
+  q<-read.csv("C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv",header=TRUE,stringsAsFactors=FALSE) ## Reads in orderdatamatrix
+  m<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/Pmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
+  z<-data.frame(matrix(NA,nrow=length(p),ncol=(length(q)+2)))
+  for (i in 1:length(p)) {
+    z[i,]<-q[grepl(strsplit(p[[i]],".csv"),q[,5]),]
+    z[i,15]<-m[grepl(strsplit(p[[i]],".csv"),m[,17]),paste(11)]
+    z[i,16]<-m[grepl(strsplit(p[[i]],".csv"),m[,17]),14]
+  }
+  nam<-names(q)
+  names(z)<-nam
+  names(z)[c(15,16)]<-c("Title","DOI")
+  setwd("C:/Users/s4284361/Documents/GitHub/Rproject")
+  write.csv("Psubmatindex.csv",x=z,row.names=FALSE)
+}
+
+##### Extract Trait_type
+##Directory Used MatasList("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices")
+ExtractTrait<-function(list2,trait_type) {
+  q<-list2
+  z<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
+  Subtrait<-q[grepl(trait_type,z$trait.type)]
+  return(Subtrait)
+}
+
+ExtractTaxon1<-function(list2,taxon1) {
+  q<-list2
+  z<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
+  Tax2<-q[grepl(taxon1,z$taxon)]
+  return(Tax2)
+}
+
+ExtractTaxon2<-function(list2, taxon.2) {
+  q<-list2
+  z<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
+  Tax1<-q[grepl(taxon.2,z$taxon2)]
+  return(Tax1)
+}
+#####
+### Current directories dir1<-"C:/Users/s4284361/Documents/GitHub/Rproject/Pmatrices"
+# dir2<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs"
+#dir3<-"C:/Users/s4284361/Documents/GitHub/Rproject/Pmatindex.csv"
+#dir4<-"C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices"
 
 #####Trialling final graph
 PtG<-PthroughG(dir4,dir2,dir3)
 FiPtG<-sizeddata(PtG,5)
-SiPtG<-sizeddata(PtG,6)
+TwPtG<-sizeddata(PtG,2)
 FoPtG<-sizeddata(PtG,4)
-SePtG<-sizeddata(PtG,7)
+ThPtG<-sizeddata(PtG,3)
 
-boxplot(SePtG[[2]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Phenotypic variance")
-boxplot(SiPtG[[2]],add=TRUE, at=1.5:(6+0.5), boxwex=0.4,xaxt='n')
-boxplot(FiPtG[[2]],add=TRUE, at=1.5:(5+0.5), boxwex=0.4,xaxt='n')
-boxplot(FoPtG[[2]],add=TRUE, at=1.5:(4+0.5), boxwex=0.4,xaxt='n')
+Gdir<-"C:/Users/s4284361/Documents/GitHub/Rproject/Graphs"
 
-boxplot(FiPtG[[2]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Phenotypic variance")
-boxplot(FiPtG[[3]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Genetic variance")
-boxplot(FiPtG[[1]],col="grey",boxwex=0.4,xlab="Eigenvector",ylab="Projection of P through G")
+mypath<-file.path(paste(Gdir),paste("PtG","_boxplot" ,paste("T5n=18"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(FiPtG[[2]],col="grey",boxwex=0.2,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,4.5))
+boxplot(FiPtG[[3]],add=TRUE, at=1.2:(5+0.2), boxwex=0.2,xaxt='n')
+boxplot(temp[[2]],col="grey",add=TRUE, at=1.4:(5+0.4), boxwex=0.2,xaxt='n')
+boxplot(temp[[3]],add=TRUE, at=1.6:(5+0.6), boxwex=0.2,xaxt='n')
+dev.off()
 
+mypath<-file.path(paste(Gdir),paste("PtG","_boxplot" ,paste("T2n=12"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(TwPtG[[2]],col="grey",boxwex=0.2,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
+boxplot(TwPtG[[3]],add=TRUE, at=1.25:(2+0.25), boxwex=0.2,xaxt='n')
+dev.off()
 
-boxplot(SePtG[[3]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Genetic variance")
-boxplot(SiPtG[[3]],add=TRUE, at=1.5:(6+0.5), boxwex=0.4,xaxt='n')
-boxplot(FiPtG[[3]],add=TRUE, at=1.5:(5+0.5), boxwex=0.4,xaxt='n')
-boxplot(FoPtG[[3]],add=TRUE, at=1.5:(4+0.5), boxwex=0.4,xaxt='n')
+mypath<-file.path(paste(Gdir),paste("PtG","_boxplot" ,paste("T4n=13"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(FoPtG[[2]],col="grey",boxwex=0.35,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(-0.3,2.7))
+boxplot(FoPtG[[3]],add=TRUE, at=1.4:(4+0.4), boxwex=0.35,xaxt='n')
+dev.off()
 
-boxplot(SePtG[[1]],col="grey",boxwex=0.4,xlab="Eigenvector",ylab="Projection of P through G")
-boxplot(SiPtG[[1]],add=TRUE, at=1.5:(6+0.5), boxwex=0.4,xaxt='n')
-boxplot(FiPtG[[1]],add=TRUE, at=1.5:(5+0.5), boxwex=0.4,xaxt='n')
-boxplot(FoPtG[[1]],add=TRUE, at=1.5:(4+0.5), boxwex=0.4,xaxt='n')
+mypath<-file.path(paste(Gdir),paste("PtG","_boxplot" ,paste("T3n=21"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(ThPtG[[2]],col="grey",boxwex=0.35,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(-0.3,2.75))
+boxplot(ThPtG[[3]],add=TRUE, at=1.4:(3+0.4), boxwex=0.35,xaxt='n')
+dev.off()
 
-hist(as.matrix(FiPtG[[1]]))
-hist(as.matrix(FiPtG[[2]]))
+mypath<-file.path(paste(Gdir),paste("PtG","_boxplot" ,paste("T5n="), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(TwPtG[[1]],col="grey",boxwex=0.35,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Projection of P through G",add=TRUE)
+boxplot(ThPtG[[1]],col="grey",boxwex=0.35,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Projection of P through G")
+boxplot(FoPtG[[1]],col="grey",boxwex=0.35,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Projection of P through G")
+boxplot(FiPtG[[1]],col="grey",boxwex=0.35,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Projection of P through G")
+
+hist(as.matrix(FiPtG[[1]][,1]))
+hist(as.matrix(FiPtG[[1]][,2]))
+hist(as.matrix(FiPtG[[1]][,3]))
+hist(as.matrix(FiPtG[[1]][,4]))
+hist(as.matrix(FiPtG[[1]][,5]))
+
+hist(as.matrix(FiPtG[[2]][,5]))
 hist(as.matrix(FiPtG[[3]]))
 
+#### P & G mats = list (will use matfromind and mataslist functions)
+PaG<-function() {
+  q<-MatasList("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices")
+  p<-ReMatfromInd("C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv")
+  return  (list(Pcor=q,Gcor=p))
+}
+
+####
+matsubsample<-function(PG,T_no) {
+  q<-PG[[1]]
+  p<-PG[[2]]
+  sto<-list(Psub=list(),Gsub=list())
+  k=1
+  for (i in 1:length(q)) {
+    if (length(q[[i]])<T_no) {
+      
+    }
+    else if (length(q[[i]])==T_no) {
+      sto[[1]][[k]]<-p[[i]]
+      names(sto[[1]])[k]<-strsplit(names(p[i]),".csv")
+      sto[[2]][[k]]<-q[[i]]
+      names(sto[[2]])[k]<-strsplit(names(q[i]),".csv")
+      k=k+1
+    }
+    else if (length(q[[i]])>T_no) {
+      randno<-sample(1:length(q[[i]]),T_no)
+      sto[[1]][[k]]<-q[[i]][randno,randno]
+      names(sto[[1]])[k]<-strsplit(names(q[i]),".csv")
+      sto[[2]][[k]]<-p[[i]][randno,randno]
+      names(sto[[2]])[k]<-strsplit(names(p[i]),".csv")
+      k=k+1
+    } 
+    else {
+      
+    }
+  }
+  return (sto)
+}
+#### command used for above function ReMatfromInd("C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv")
+
+### Redone MatfromInd For Psubmatfile
+
+ReMatfromInd<-function(dir1,dir2){ ## dir1 <- cor matrix folder ##dir 2 PmatIndex file_file
+  q<-path_file(dir1)
+  setwd(dir1)
+  matrices <- dir()
+  no.mats <- length(q[[1]][grepl(".csv", q[[1]])])
+  matrix_list <- list()
+  
+  # this loop reads in each matrix from the folder of .csv files and writes
+  # them into a list
+  for (i in 1:no.mats) {
+    matrix_list[[i]] <- read.csv(q[[1]][grepl(".csv", q[[1]])][i])
+  }
+  names(matrix_list) <- matrices[grepl(".csv",q[[1]])]
+  z<-read.csv(dir2,stringsAsFactors=FALSE)
+  GPmat<-list()
+  for (i in 1:length(z[,5])) {
+    GPmat[[i]]<-matrix_list[grepl(z[i,5],names(matrix_list))][[1]]
+    names(GPmat)[i]<-z[i,5]
+  }
+  return (GPmat) ### return list of list of list
+}
+
+#### modified P through G to accept list instead of dir
+
+PthroughG2<-function(tests) { ## dir1 is the directory of P submatrices and dir2 is the dir containing the G matrices
+  Pmats<-tests[[1]]
+  Gmats<-tests[[2]] ### creates list of relevant G matrices entreted in Pmatindex
+  ProjPG<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
+  Peigsto<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
+  Geigsto<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
+  nullnames<-rep(0,length(Pmats))
+  rownames(ProjPG)<-nullnames
+  rownames(Peigsto)<-nullnames
+  rownames(Geigsto)<-nullnames
+  for (i in 1:length(Pmats)) {
+    Psto<-Pmats[grepl(names(Gmats[i]),names(Pmats))]
+    Gsto<-Gmats[grepl(names(Gmats[i]),names(Pmats))]
+    rownames(ProjPG)[i]<-names(Gmats[i])
+    rownames(Peigsto)[i]<-names(Gmats[i])
+    rownames(Geigsto)[i]<-names(Gmats[i])
+    for (j in 1:length(Psto[[1]][,1])){
+      ProjPG[i,j]<-t((eigen(Psto[[1]])$vectors[,j]))%*%as.matrix(Gsto[[1]])%*%(eigen(Psto[[1]])$vectors[,j])
+      Peigsto[i,j]<-eigen(Psto[[1]])$values[j]
+      Geigsto[i,j]<-eigen(Gsto[[1]])$values[j]
+    }
+  }
+  return(list(ProjPG=ProjPG,Peigsto=Peigsto,Geigsto=Geigsto))
+}
+
+### comparison using original and increased sample set
+mypath<-file.path(paste(Gdir),paste("PtG&temp","_boxplot" ,paste("T5n=18"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(FiPtG[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,4.5))
+boxplot(FiPtG[[3]],add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+boxplot(temp[[2]],col="grey",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
+boxplot(temp[[3]],add=TRUE, at=1.6:(5+0.6), boxwex=0.18,xaxt='n')
+dev.off()
+
+mypath<-file.path(paste(Gdir),paste("PtG&temp","_boxplot" ,paste("T5n=18"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(FiPtG[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,4.5))
+boxplot(FiPtG[[3]],add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+boxplot(temp[[2]],col="grey",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
+boxplot(temp[[3]],add=TRUE, at=1.6:(5+0.6), boxwex=0.18,xaxt='n')
+dev.off()
+
+mypath<-file.path(paste(Gdir),paste("PtG&temp[[1]]","_boxplot" ,paste("T5n=18"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(temp[[1]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
+dev.off()
+
+#### The following was run to write the used 5 trait matrices to a folder
+PG<-PaG()
+tests<-matsubsample(PG,5)
+lkt<-tests
+names(lkt[[1]])<-paste(names(lkt[[1]]),".csv",sep="")
+names(lkt[[2]])<-paste(names(lkt[[2]]),".csv",sep="")
+WriteMatList(lkt[[1]],"C:/Users/s4284361/Documents/GitHub/Rproject/Psubsampledmatrices")
+WriteMatList(lkt[[2]],"C:/Users/s4284361/Documents/GitHub/Rproject/Gsubsampledmatrices")
 
 
+
+#### created subset of Psubmatrixindex
+mn<-data.frame(matrix(0,nrow=44,ncol=16))
+for (i in 1:length(names(tests[[1]]))) {mn[i,]<-z[grepl(names(tests[[1]])[i],z$filename),]}
+
+PsubtraitM<-tests[[1]][grepl("M",mn[,8])]
+PsubtraitS<-tests[[1]][grepl("S",mn[,8])]
+PsubtraitL<-tests[[1]][grepl("L",mn[,8])]
+GsubtraitM<-tests[[2]][grepl("M",mn[,8])]
+GsubtraitS<-tests[[2]][grepl("S",mn[,8])]
+GsubtraitL<-tests[[2]][grepl("L",mn[,8])]
+
+subM<-list(PsubtraitM,GsubtraitM)
+subS<-list(PsubtraitS,GsubtraitS)
+subL<-list(PsubtraitL,GsubtraitL)
+
+MPtG<-PthroughG2(subM)
+SPtG<-PthroughG2(subS)
+LPtG<-PthroughG2(subL)
+
+mypath<-file.path(paste(Gdir),paste("SplitT_P","_boxplot" ,paste("T5n=44"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(LPtG[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,4.5))
+boxplot(MPtG[[2]],add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+boxplot(SPtG[[2]],col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
+legend(x="topright", c("Life History - 7","Morphology - 27","Sexually Selected - 10"), fill=c("white","grey","gray42"))
+dev.off()
+
+mypath<-file.path(paste(Gdir),paste("SplitT_G","_boxplot" ,paste("T5n=44"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(LPtG[[3]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,4.5))
+boxplot(MPtG[[3]],add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+boxplot(SPtG[[3]],col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
+legend(x="topright", c("Life History - 7","Morphology - 27","Sexually Selected - 10"), fill=c("white","grey","gray42"))
+dev.off()
+
+mypath<-file.path(paste(Gdir),paste("SplitT_PtG","_boxplot" ,paste("T5n=44"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(LPtG[[1]],col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,4.5))
+boxplot(MPtG[[1]],col="grey", add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+boxplot(SPtG[[1]],col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
+legend(x="topright", c("Life History - 7","Morphology - 27","Sexually Selected - 10"), fill=c("white","grey","gray42"))
+dev.off()
