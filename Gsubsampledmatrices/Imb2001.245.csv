@@ -1,6 +1,6 @@
-"no.intermediate.achenes","percentage.of.intermediate.achenes","no.outer.bracts","length.of.parastiches","no.bracts"
-1,0.99,0.05,-0.18,0.006
-0.99,1,-0.09,-0.25,0.03
-0.05,-0.09,1,0.47,0.95
--0.18,-0.25,0.47,1,0.34
-0.006,0.03,0.95,0.34,1
+"no.bracts","no.intermediate.achenes","length.of.parastiches","percentage.of.peripheral.achenes","percentage.of.intermediate.achenes"
+1,0.006,0.34,-0.52,0.03
+0.006,1,-0.18,-0.2,0.99
+0.34,-0.18,1,-0.6,-0.25
+-0.52,-0.2,-0.6,1,-0.13
+0.03,0.99,-0.25,-0.13,1

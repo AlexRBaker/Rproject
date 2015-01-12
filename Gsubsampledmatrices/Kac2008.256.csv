@@ -1,6 +1,6 @@
-"nectar.concentration","log.nectar.volume","log.total.energy","corolla.tube.length","corolla.limb.width"
-1,0.1483,0.1933,-0.2719,0.0204
-0.1483,1,0.8926,0.0715,0.108
-0.1933,0.8926,1,-0.016,0.0861
--0.2719,0.0715,-0.016,1,0.2641
-0.0204,0.108,0.0861,0.2641,1
+"corolla.tube.length","corolla.mouth.diameter","log.nectar.volume","log.total.energy","nectar.concentration"
+1,0.0066,0.0715,-0.016,-0.2719
+0.0066,1,0.1777,0.2878,0.0782
+0.0715,0.1777,1,0.8926,0.1483
+-0.016,0.2878,0.8926,1,0.1933
+-0.2719,0.0782,0.1483,0.1933,1

@@ -1,6 +1,6 @@
-"mass.at.72hrs","mass.at.dispersal","mass.at.emergence","hatching.to.dispersal","hatching.to.emergence"
-1,0.54,0.43,-0.69,-0.18
-0.54,1,0.88,-0.44,0.08
-0.43,0.88,1,-0.32,0.14
--0.69,-0.44,-0.32,1,0.49
--0.18,0.08,0.14,0.49,1
+"mass.at.hatching","hatching.to.dispersal","mass.at.emergence","wandering.stage","mass.at.dispersal"
+1,0,0.04,0.11,0.11
+0,1,-0.32,-0.11,-0.44
+0.04,-0.32,1,0.14,0.88
+0.11,-0.11,0.14,1,0.11
+0.11,-0.44,0.88,0.11,1

@@ -728,6 +728,7 @@ WriteMatList(lkt[[2]],"C:/Users/s4284361/Documents/GitHub/Rproject/Gsubsampledma
 
 #### created subset of Psubmatrixindex
 mn<-data.frame(matrix(0,nrow=44,ncol=16))
+z<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
 for (i in 1:length(names(tests[[1]]))) {mn[i,]<-z[grepl(names(tests[[1]])[i],z$filename),]}
 
 PsubtraitM<-tests[[1]][grepl("M",mn[,8])]
@@ -767,4 +768,38 @@ boxplot(LPtG[[1]],col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector"
 boxplot(MPtG[[1]],col="grey", add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
 boxplot(SPtG[[1]],col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
 legend(x="topright", c("Life History - 7","Morphology - 27","Sexually Selected - 10"), fill=c("white","grey","gray42"))
+dev.off()
+
+
+#### Analysis changed to ignore trait_types. Variability was too large to discriminate between groups. Also, con1992.170 was removed due to correlation values far greater than 1.
+PG<-PaG()
+tests<-matsubsample(PG,5)
+lkt<-tests
+names(lkt[[1]])<-paste(names(lkt[[1]]),".csv",sep="")
+names(lkt[[2]])<-paste(names(lkt[[2]]),".csv",sep="")
+WriteMatList(lkt[[1]],"C:/Users/s4284361/Documents/GitHub/Rproject/Psubsampledmatrices")
+WriteMatList(lkt[[2]],"C:/Users/s4284361/Documents/GitHub/Rproject/Gsubsampledmatrices")
+test2<-PthroughG2(tests)
+
+
+mypath<-file.path(paste(Gdir),paste("P&G","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(test2[[2]],col="white",boxwex=0.25,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
+boxplot(test2[[3]],col="grey",add=TRUE, at=1.3:(5+0.3), boxwex=0.25,xaxt='n')
+legend(x="topright", c("Phenotypic Correlation","Genetic Correlation"), fill=c("white","grey"))
+dev.off()
+
+
+mypath<-file.path(paste(Gdir),paste("PthroughG","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(test2[[1]],col="white",boxwex=0.25,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
+legend(x="topright", c("P%*%G%*%P"), fill=c("White"))
+dev.off()
+
+mypath<-file.path(paste(Gdir),paste("All3","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(test2[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,4.5))
+boxplot(test2[[3]],add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+boxplot(test2[[1]],col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
+legend(x="topright", c("Phenotypic correlation","Genotypic correlation","Projection of P through G"), fill=c("white","grey","gray42"))
 dev.off()

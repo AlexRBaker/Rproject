@@ -1,6 +1,6 @@
-"Stomatal.conductance","chlorophyll.concentration","specific.leaf.area","light.saturated.photosynthetic.rate","Rosette.size"
-1,0.058,0.237,0.784,-0.064
-0.058,1,-0.306,0.25,-0.157
-0.237,-0.306,1,0.002,-0.08
-0.784,0.25,0.002,1,-0.088
--0.064,-0.157,-0.08,-0.088,1
+"Rosette.size","light.saturated.photosynthetic.rate","chlorophyll.concentration","specific.leaf.area","Stomatal.conductance"
+1,-0.088,-0.157,-0.08,-0.064
+-0.088,1,0.25,0.002,0.784
+-0.157,0.25,1,-0.306,0.058
+-0.08,0.002,-0.306,1,0.237
+-0.064,0.784,0.058,0.237,1

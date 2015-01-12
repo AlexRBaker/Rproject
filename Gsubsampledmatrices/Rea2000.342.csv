@@ -1,6 +1,6 @@
-"fecundity.between.2...7.yrs","reproductive.success.between.2...7.yrs","weaning.success.between.2...7.yrs","age.at.primaparity","lifetime.reproductive.success"
-1,1,0.99,0.69,1.31
-1,1,0.93,0.83,0.81
-0.99,0.93,1,1.08,0.92
-0.69,0.83,1.08,1,1.27
-1.31,0.81,0.92,1.27,1
+"weaning.success.after.7.yrs","longevity","reproductive.success.between.2...7.yrs","lifetime.fecundity","weaning.success.between.2...7.yrs"
+1,0.52,0.61,1.05,0.99
+0.52,1,1.47,0.69,0.96
+0.61,1.47,1,0.77,0.93
+1.05,0.69,0.77,1,1
+0.99,0.96,0.93,1,1
