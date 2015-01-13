@@ -1,6 +1,6 @@
-"mass.at.hatching","hatching.to.dispersal","mass.at.emergence","wandering.stage","mass.at.dispersal"
-1,0,0.04,0.11,0.11
-0,1,-0.32,-0.11,-0.44
-0.04,-0.32,1,0.14,0.88
-0.11,-0.11,0.14,1,0.11
-0.11,-0.44,0.88,0.11,1
+"mass.at.emergence","hatching.to.emergence","mass.at.dispersal","in.pupal.chamber","wandering.stage"
+1,0.14,0.88,0.36,0.14
+0.14,1,0.08,0.36,0.57
+0.88,0.08,1,0.44,0.11
+0.36,0.36,0.44,1,-0.27
+0.14,0.57,0.11,-0.27,1

@@ -1,6 +1,6 @@
-"foretibia.length","wing.vein.length","intersetal.width","midtibia.length","antenna.length"
-1,0.1,0.17,0.73,0.24
-0.1,1,0.11,0.06,-0.05
-0.17,0.11,1,0.14,0.09
-0.73,0.06,0.14,1,0.33
-0.24,-0.05,0.09,0.33,1
+"wing.vein.length","antenna.length","head.length","intersetal.width","foretibia.length"
+1,-0.05,-0.02,0.11,0.1
+-0.05,1,0.77,0.09,0.24
+-0.02,0.77,1,0.14,0.24
+0.11,0.09,0.14,1,0.17
+0.1,0.24,0.24,0.17,1
