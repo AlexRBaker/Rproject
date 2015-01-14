@@ -1,6 +1,6 @@
-"genitalscleritemorphomeasure4.2","genitalscleritemorphomeasure2.2","genitalscleritemorphomeasure2.3","genitalscleritemorphomeasure2.1","genitalscleritemorphomeasure3.1"
-1,-0.66,-0.71,-0.68,-0.43
--0.66,1,0.99,0.42,0.65
--0.71,0.99,1,0.72,0.89
--0.68,0.42,0.72,1,0.74
--0.43,0.65,0.89,0.74,1
+"genitalscleritemorphomeasure3.2","elytralength","genitalscleritemorphomeasure4.1","genitalscleritemorphomeasure2.2","genitalscleritemorphomeasure4.2"
+1,-0.89,-0.37,0.78,-0.41
+-0.89,1,-1.06,-0.001,-0.15
+-0.37,-1.06,1,-0.99,1.25
+0.78,-0.001,-0.99,1,-0.66
+-0.41,-0.15,1.25,-0.66,1

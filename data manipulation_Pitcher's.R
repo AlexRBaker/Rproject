@@ -680,9 +680,9 @@ Gdir<-"C:/Users/s4284361/Documents/GitHub/Rproject/Graphs"
 
 mypath<-file.path(paste(Gdir),paste("P&G","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
 pdf(file=mypath)
-boxplot(test2[[2]],col="white",boxwex=0.25,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
-boxplot(test2[[3]],col="grey",add=TRUE, at=1.3:(5+0.3), boxwex=0.25,xaxt='n')
-legend(x="topright", c("Phenotypic Correlation","Genetic Correlation"), fill=c("white","grey"))
+boxplot(test2[[3]],col="white",boxwex=0.25,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
+boxplot(test2[[2]],col="grey",add=TRUE, at=1.3:(5+0.3), boxwex=0.25,xaxt='n')
+legend(x="topright", c("Genetic Correlation","Phenotypic Correlation"), fill=c("white","grey"))
 dev.off()
 
 
@@ -694,7 +694,7 @@ dev.off()
 
 mypath<-file.path(paste(Gdir),paste("All3","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
 pdf(file=mypath)
-boxplot(test2[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,4.5))
+boxplot(test2[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,max(test2[[1]])))
 boxplot(test2[[3]],add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
 boxplot(test2[[1]],col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
 legend(x="topright", c("Phenotypic correlation","Genotypic correlation","Projection of P through G"), fill=c("white","grey","gray42"))
@@ -736,7 +736,7 @@ DifL<-(LPtG[[2]]-LPtG[[3]])
 
 mypath<-file.path(paste(Gdir),paste("SplitT_P","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
 pdf(file=mypath)
-boxplot(DifL,col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Difference between eig(P) and eig(G)")
+boxplot(DifL,col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="eig(P) - eig(G)")
 boxplot(DifM,col="grey",add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
 boxplot(DifS,col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
 abline(0,0,lty=2)
@@ -744,9 +744,11 @@ legend(x="bottomright", c("Life History - 7","Morphology - 26","Sexually Selecte
 dev.off()
 
 ### INcluding compiled dataset
+z<-(test2$Peigsto-test2$Geigsto)
+
 mypath<-file.path(paste(Gdir),paste("SplitT_P&All","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
 pdf(file=mypath)
-boxplot(DifL,col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="eig(P) - eig(G)",ylim=c(-1.8,0.8))
+boxplot(DifL,col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="eig(P) - eig(G)",ylim=c(-1.7,1))
 boxplot(DifM,col="grey",add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
 boxplot(DifS,col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
 boxplot(z,col="black",add=TRUE, at=1.6:(5+0.6), boxwex=0.18, xaxt='n')
@@ -756,8 +758,41 @@ dev.off()
 
 mypath<-file.path(paste(Gdir),paste("SplitT_PtG","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
 pdf(file=mypath)
-boxplot(LPtG[[1]],col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="P'GP")
+boxplot(LPtG[[1]],col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="P'GP",ylim=c(min(MPtG[[1]][,5]),max(MPtG[[1]][,1])))
 boxplot(MPtG[[1]],col="grey", add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
 boxplot(SPtG[[1]],col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
 legend(x="topright", c("Life History - 7","Morphology - 26","Sexually Selected - 10"), fill=c("white","grey","gray42"))
+abline(1,0,lty=2)
+dev.off()
+
+
+#### Splitting data by plant/animal taxon
+PtaxonA<-tests[[1]][grepl("A",mn[,7])]
+PtaxonP<-tests[[1]][grepl("P",mn[,7])]
+GtaxonA<-tests[[2]][grepl("A",mn[,7])]
+GtaxonP<-tests[[2]][grepl("P",mn[,7])]
+
+subA<-list(PtaxonA,GtaxonA)
+subP<-list(PtaxonP,GtaxonP)
+
+APtG<-PthroughG2(subA)
+PPtG<-PthroughG2(subP)
+
+DifA<-(APtG[[2]]-APtG[[3]])
+DifP<-(PPtG[[2]]-PPtG[[3]])
+
+mypath<-file.path(paste(Gdir),paste("SplitTaxon","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(DifA,col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="eig(P) - eig(G)")
+boxplot(DifP,col="grey",add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+abline(0,0,lty=2)
+legend(x="bottomright", c("Animal -32","Plant -11"), fill=c("white","grey"))
+dev.off()
+
+mypath<-file.path(paste(Gdir),paste("SplitTaxonPGP","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(APtG[[1]],col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="P'GP")
+boxplot(PPtG[[2]],col="grey",add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+abline(0,0,lty=2)
+legend(x="topright", c("Animal -32","Plant -11"), fill=c("white","grey"))
 dev.off()

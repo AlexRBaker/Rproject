@@ -1,5 +1,6 @@
 
 library("MASS")
+library("Matrix")
 ###Start of Iain's code#####
 
 genspec <- function(c1,c2,x,range,step) {
@@ -110,34 +111,70 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory) {
   
   LisG<-vector("list",k)
   LisP<-vector("list",k)
+  LisGR<-vector("list",k)
   varmat<-matrix(0,nrow=k,ncol=p)
   Peig<-matrix(0,nrow=k,ncol=p)
   Gvarmat<-matrix(0,nrow=k,ncol=p)
   newmx<-matrix(0,nrow=k,ncol=p)
   remssl<-matrix(0,nrow=k,ncol=p)
+  NePD<-matrix(0,nrow=k,ncol=p)
   for (i in 1:k){
     Y <- gendat(p,n,r,SigmaA,SigmaE)
     Yssp <- ssp(Y,n,r)
-    remssl[i,]<-reml(Yssp$W,Yssp$B,50,r)$lamB
+    remssl[i,]<-reml(Yssp$W,Yssp$B,n,r)$lamB
     LisP[[i]]<-var(Y)
+    LisP[[i]]<-cov2cor(LisP[[i]])
     LisG[[i]]<-manov(Yssp$W, Yssp$B, n,r)$G
+    NePD[i,]<-eigen(nearPD(LisG[[i]],corr=TRUE)$mat)$values
+    LisGR[[i]]<-nearPD(LisG[[i]],corr=TRUE)$mat
     newmx[i,] <- manov(Yssp$W, Yssp$B, n,r)$eige1
     Gvarmat[i,]<-sort(diag(manov(Yssp$W, Yssp$B, n,r)$G),decreasing=TRUE)
     varmat[i,]<-sort(diag(var(Y)),decreasing=TRUE)
-    Peig[i,]<-eigen(var(Y))$values
+    Peig[i,]<-eigen(LisP[[i]])$values
   }
   
   
   ProjPG<-matrix(0,nrow=k,ncol=p)
   for (i in 1:k) {
     for (j in 1:p){
-      ProjPG[i,j]<-t((eigen(LisP[[i]])$vectors[,j]))%*%LisG[[i]]%*%(eigen(LisP[[i]])$vectors[,j])
+      ProjPG[i,j]<-t((eigen(LisP[[i]],symmetric=TRUE)$vectors[,j]))%*%LisG[[i]]%*%(eigen(LisP[[i]],symmetric=TRUE)$vectors[,j])
     }
   }
+    
+  CorProjPG<-matrix(0,nrow=k,ncol=p)
+  for (i in 1:k) {
+    for (j in 1:p){
+      CorProjPG[i,j]<-as.vector(t((eigen(LisP[[i]],symmetric=TRUE)$vectors[,j]))%*%LisGR[[i]]%*%(eigen(LisP[[i]],symmetric=TRUE)$vectors[,j]))
+    }
+  }
+  mypath <- file.path(paste(directory),paste("CorPGP","_boxplot" ,paste("_p",p,"n",n,"r",r,"k",k,sep=""), ".pdf", sep = ""))
+  pdf(file=mypath)
+  boxplot(CorProjPG,col="grey",boxwex=0.4,xlab="Eigenvector",ylab="Projection of P through G")
+  abline(0,0,lty=2)
+  dev.off()
+  
   mypath <- file.path(paste(directory),paste("PGP","_boxplot" ,paste("_p",p,"n",n,"r",r,"k",k,sep=""), ".pdf", sep = ""))
   pdf(file=mypath)
   boxplot(ProjPG,col="grey",boxwex=0.4,xlab="Eigenvector",ylab="Projection of P through G")
   abline(0,0,lty=2)
+  dev.off()
+  
+  z<-ProjPG+1
+  
+  mypath <- file.path(paste(directory),paste("PGP_cor&shiftedvar","_boxplot" ,paste("_p",p,"n",n,"r",r,"k",k,sep=""), ".pdf", sep = ""))
+  pdf(file=mypath)
+  boxplot(CorProjPG,col="white",boxwex=0.4,xlab="Eigenvector",ylab="Projection of P through G", ylim=c(0.85,1.15))
+  boxplot(z,add=TRUE, col="grey",at=1.5:(p+0.5), boxwex=0.4,xaxt='n')
+  legend(x="bottomright", c("Pcor'GcorPcor","(P'GP+1)"), fill=c("white","grey"))
+  abline(1,0,lty=2)
+  dev.off()
+  
+  q<-Peig-NePD
+  mypath <- file.path(paste(directory),paste("DifeigPG","_boxplot" ,paste("_p",p,"n",n,"r",r,"k",k,sep=""), ".pdf", sep = ""))
+  pdf(file=mypath)
+  boxplot(q,col="white",boxwex=0.4,xlab="Eigenvector",ylab="eig(P)-eig(G)")
+  legend(x="topright", c("eig(P)-eig(G)"), fill=c("white"))
+  abline(1,0,lty=2)
   dev.off()
     
   
@@ -198,8 +235,16 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory) {
   abline(mean(diag(SigmaE)+diag(SigmaA)),0,lty=2)
   dev.off()
 
+  mypath <- file.path(paste(directory),paste("NePDvsUncon","_boxplot" ,paste("_p",p,"n",n,"r",r,"k",k,sep=""), ".pdf", sep = ""))
+  pdf(file=mypath)
+  boxplot(newmx,col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Genetic Variance")
+  boxplot(NePD,add=TRUE, at=1.5:(p+0.5), boxwex=0.4,xaxt='n')
+  abline(mean(diag(SigmaE)+diag(SigmaA)),0,lty=2)
+  dev.off()
   
-  return(list(LisP=LisP,LisG=LisG,remssl=remssl))
+  return(list(LisP=LisP,LisG=LisG,remssl=remssl,LisGR=LisGR,NePD=NePD,Peig=Peig))
 }
+
+
 
 
