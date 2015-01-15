@@ -1,4 +1,5 @@
 
+if (FALSE) { ## Wrapping earlier code in if statement so it doesn't get run by accident.
 ######### Creating suitable data frames for storinf the data
 
 p<-list.files(path="G:/GIThub/Pitchers_PTRS2014/Data/Gmats_&_means_as_CSVs")
@@ -122,13 +123,13 @@ tempsto3[tempsto3[,16]==0,][,1] #### Gets the subset of papers without a corresp
 
 
 #### Used to make sure a pdf was retrieved for every entry.
-
+}
 
 ###### Processing Gcor and Gcov matrices from Pritcher's paper.
 
 ### First need to create list of path files. Making it a function to avoid clutter in work space
-dir1<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_&_means_as_CSVs/"
-dir2<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs/"
+#dir1<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_&_means_as_CSVs/"
+#dir2<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs/"
 ## Creates list of pathfiles for files ina folder.
 path_file <- function(dir1,dir2) {
   if (missing(dir2)) {
@@ -796,3 +797,9 @@ boxplot(PPtG[[2]],col="grey",add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
 abline(0,0,lty=2)
 legend(x="topright", c("Animal -32","Plant -11"), fill=c("white","grey"))
 dev.off()
+
+
+nullmat<-matrix(0,nrow=length(test2[[1]][,1]),ncol=15)
+nullmat[,1:5]<-test2[[1]]
+nullmat[,6:10]<-test2[[2]]
+nullmat[,11:15]<-test2[[3]]
