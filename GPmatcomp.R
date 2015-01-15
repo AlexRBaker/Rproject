@@ -258,7 +258,7 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
   abline(mean(diag(SigmaE)+diag(SigmaA)),0,lty=2)
   dev.off()
   
-  return(list(LisP=LisP,LisG=LisG,remssl=remssl,LisGR=LisGR,NePD=NePD,Peig=Peig,ProjGP=ProjGP,CorProjGP=CorProjGP))
+  return(list(LisP=LisP,LisG=LisG,remssl=remssl,LisGR=LisGR,NePD=NePD,Peig=Peig,ProjGP=ProjGP,CorProjGP=CorProjGP,newmx=newmx))
 }
 
 q<-GPmatcomp(5,50,5,0*diag(5),diag(5),200,"C:/ABakeSumProj",cor=TRUE)
@@ -271,7 +271,7 @@ for (i in 1:length(q$LisP)) {
 
 z<-colMeans(angle)
 
-q<-GPmatcomp(5,50,5,0*diag(5),diag(5),200,"C:/ABakeSumProj",cor=TRUE)
+q<-GPmatcomp(5,50,5,0*diag(5),diag(5),200,"C:/ABakeSumProj",cor=FALSE)
 PPP<-matrix(0,nrow=length(q$LisP),ncol=length(q$LisP[[1]][,1]))
 for (i in 1:length(q$LisP)) {
   for (j in 1:length(q$LisP[[1]][,1])) {
