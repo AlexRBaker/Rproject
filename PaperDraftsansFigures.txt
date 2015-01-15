@@ -117,8 +117,11 @@ Comparing G: multivariate analysis of genetic variation in multiple populations
 Studying phenotypic evolution using multivariate quantitative genetcs.
 Variance component estimation in animal breeding: a review.
 A simple procedure for the comparison of covariance matrices.
-
-
+An evolutionary relationship between genetic variation and phenotypic fluctuation
+Comparing environmental and genetic variance as adaptive response to fluctuating selection
+Phenotypic Selection in Natural Populations: What Limits Directional Selection?
+Phenotypic plasticity facilitates mutational variance, genetic variance, and evolvability along the major axis of environmental variation
+The quantitative genetics of phenotypic variation in animals
 #### 19/01/15
 
 
