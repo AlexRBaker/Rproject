@@ -107,7 +107,7 @@ gendat <- function(p,n,r, SigmaA, SigmaE){
 ###### simulated data is made a multivariate normal with covariance matrix equal to either SigmaA or SigmaE to get differ
 ###### Directory is the location wher you wish the graphs to be saved. It needs ti be done as a string. Eg if you wish to save to C:/testfolder you must input "C:/testfolder"
 ## Start of work by Alex
-GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory) {
+GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
   
   LisG<-vector("list",k)
   LisP<-vector("list",k)
@@ -123,7 +123,9 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory) {
     Yssp <- ssp(Y,n,r)
     remssl[i,]<-reml(Yssp$W,Yssp$B,n,r)$lamB
     LisP[[i]]<-var(Y)
-    LisP[[i]]<-cov2cor(LisP[[i]])
+    if (cor==TRUE) {
+      LisP[[i]]<-cov2cor(LisP[[i]])
+    }
     LisG[[i]]<-manov(Yssp$W, Yssp$B, n,r)$G
     NePD[i,]<-eigen(nearPD(LisG[[i]],corr=TRUE)$mat)$values
     LisGR[[i]]<-nearPD(LisG[[i]],corr=TRUE)$mat
@@ -140,7 +142,21 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory) {
       ProjPG[i,j]<-t((eigen(LisP[[i]],symmetric=TRUE)$vectors[,j]))%*%LisG[[i]]%*%(eigen(LisP[[i]],symmetric=TRUE)$vectors[,j])
     }
   }
+  
+  ProjGP<-matrix(0,nrow=k,ncol=p)
+  for (i in 1:k) {
+    for (j in 1:p){
+      ProjGP[i,j]<-t((eigen(LisG[[i]],symmetric=TRUE)$vectors[,j]))%*%LisP[[i]]%*%(eigen(LisG[[i]],symmetric=TRUE)$vectors[,j])
+    }
+  }
     
+  CorProjGP<-matrix(0,nrow=k,ncol=p)
+  for (i in 1:k) {
+    for (j in 1:p){
+      CorProjGP[i,j]<-as.vector(t((eigen(LisGR[[i]],symmetric=TRUE)$vectors[,j]))%*%LisP[[i]]%*%(eigen(LisGR[[i]],symmetric=TRUE)$vectors[,j]))
+    }
+  }
+  
   CorProjPG<-matrix(0,nrow=k,ncol=p)
   for (i in 1:k) {
     for (j in 1:p){
@@ -242,9 +258,34 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory) {
   abline(mean(diag(SigmaE)+diag(SigmaA)),0,lty=2)
   dev.off()
   
-  return(list(LisP=LisP,LisG=LisG,remssl=remssl,LisGR=LisGR,NePD=NePD,Peig=Peig))
+  return(list(LisP=LisP,LisG=LisG,remssl=remssl,LisGR=LisGR,NePD=NePD,Peig=Peig,ProjGP=ProjGP,CorProjGP=CorProjGP))
 }
 
+q<-GPmatcomp(5,50,5,0*diag(5),diag(5),200,"C:/ABakeSumProj",cor=TRUE)
+angle<-matrix(0,nrow=length(q$LisP),ncol=length(q$LisP[[1]][,1]))
+for (i in 1:length(q$LisP)) {
+  for (j in 1:length(q$LisP[[1]][,1])) {
+    angle[i,j]<-acos(eigen(q$LisP[[i]])$vectors[,j]%*%eigen(q$LisG[[i]])$vectors[,j])*180/pi
+  }
+}
+
+z<-colMeans(angle)
+
+q<-GPmatcomp(5,50,5,0*diag(5),diag(5),200,"C:/ABakeSumProj",cor=TRUE)
+PPP<-matrix(0,nrow=length(q$LisP),ncol=length(q$LisP[[1]][,1]))
+for (i in 1:length(q$LisP)) {
+  for (j in 1:length(q$LisP[[1]][,1])) {
+    PPP[i,j]<-(eigen(q$LisP[[i]])$vectors[,j]%*%q$LisP[[i]]%*%eigen(q$LisP[[i]])$vectors[,j])
+  }
+}
+
+q<-GPmatcomp(5,50,5,0*diag(5),diag(5),200,"C:/ABakeSumProj",cor=TRUE)
+angle<-matrix(0,nrow=length(q$LisP),ncol=length(q$LisP[[1]][,1]))
+for (i in 1:length(q$LisP)) {
+  for (j in 1:length(q$LisP[[1]][,1])) {
+    angle[i,j]<-acos(eigen(q$LisP[[i]])$vectors[,1]%*%eigen(q$LisG[[i]])$vectors[,j])*180/pi
+  }
+}
 
 
 

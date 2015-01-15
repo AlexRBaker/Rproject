@@ -91,3 +91,40 @@ Whole article is capped at 4500 words - maybe discussion should be 2k, methods a
 ####
 
 Conclusions:
+
+
+
+##### List of article I have read/reading to keep a record.Aim for at least 10 articles a day.
+
+#### Likely to select 10 at the start of day and go from there to reduce wasted downtime searching between papers.
+#### If a reference in one o those articles seems particularly pertinent then it will be added to the list.
+#### Might add relevant article to the next days pile if there does not appear to be time.
+
+#### 15/01/15
+Evolutionary rates for multivariate traits: the role of selection and genetic variation.
+The distribution of genetic variance across phenotypic space and the response to selection.
+Characterizing the evolution of genetic variance using genetic covariance tensors
+Variation, selection and evolution of function-valued traits.
+Evolutionary constraints in high-dimensional trait sets.
+Determining the Effective Dimensionality of the Genetic Variance–Covariance Matrix
+Characterizing the evolution of genetic variance using genetic covariance tensors
+Phenotypic Divergence along Lines of Genetic Variance
+Variation, selection and evolution of function-valued traits.
+New Answers for Old Questions: The evolutionary Quantitative genetics of Wild Animal populations
+
+#### 16/01/15
+Comparing G: multivariate analysis of genetic variation in multiple populations
+Studying phenotypic evolution using multivariate quantitative genetcs.
+Variance component estimation in animal breeding: a review.
+A simple procedure for the comparison of covariance matrices.
+
+
+#### 19/01/15
+
+
+
+####
+
+
+
+#### Archive data on DRYAD or similar service in last week or two before end of project.
