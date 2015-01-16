@@ -711,3 +711,26 @@ nullmat<-matrix(0,nrow=length(test2[[1]][,1]),ncol=15)
 nullmat[,1:5]<-test2[[1]]
 nullmat[,6:10]<-test2[[2]]
 nullmat[,11:15]<-test2[[3]]
+
+anglePG<-function(lists){
+  angle<-matrix(0,nrow=length(lists[[1]]),ncol=5*length(lists[[1]][[1]][1,]))
+  for (i in 1:length(lists[[1]])) {
+    for (j in 1:length(lists[[1]][[1]][1,])){
+      for (k in 1:5) {
+    angle[i,(j-1)*5+k]<-acos(t(eigen(lists[[1]][[i]])$vectors[,j])%*%eigen(lists[[2]][[i]])$vectors[,k]/(sqrt(sum(eigen(lists[[1]][[i]])$vectors[,j]*eigen(lists[[1]][[i]])$vectors[,j])*sum(eigen(lists[[2]][[i]])$vectors[,k]*eigen(lists[[2]][[i]])$vectors[,k]))))*180/pi  
+      }
+    }
+  }
+  return(angle)
+}
+q<-angle
+
+boxplot(q[,1:5],boxwex=0.12,col="grey",at=0.8:4.8,ylab="angle between eigenvectors of P and G",xlab="eigenvector of P")
+boxplot(q[,6:10],boxwex=0.12,at=1:5-0.05,add=TRUE,col="white",xaxt='n')
+boxplot(q[,11:15],add=TRUE,boxwex=0.12,at=1:5+0.10,col="grey42",xaxt='n')
+boxplot(q[,16:20],add=TRUE,boxwex=0.12,at=1:5+0.25,col="tan",xaxt='n')
+boxplot(q[,21:25],add=TRUE,boxwex=0.12,at=1:5+0.40,col="azure",xaxt='n')
+abline(90,0,lty=2) ### angle for orthogonal matrices
+cov2cor(var(q[,c(1,6,11,16,21)])) # angle correlation
+
+matrix(colMeans(q),5,byrow=T) ## matrix of means

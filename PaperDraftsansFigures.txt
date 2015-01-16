@@ -80,7 +80,7 @@ Eigenanalysis was performed on these paired matrices and the difference between 
 
 ######                                                                    #####
 Discussion:
-
+Hypotheses: 
 
 ####
 Underlying distributions of G are unknown so it may be difficult to rigorously test any hypotheses posed. The distribution of the different of P and G is also unknown. Leads to comparison with simulated data, qualitative rather than quantitative comparisons. 
