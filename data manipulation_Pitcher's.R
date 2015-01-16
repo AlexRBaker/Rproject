@@ -225,57 +225,6 @@ MaxnoTraits<- function(list) {
   ##return(ProjPG)
 ##}
 
-#### Might be able to include taxons if I refer to the Matrix Index, and then create two subsets of the G mat and Pmat which match the selection.
-#### Taxon1 and 2 are as names in Pitcher's et al. and list1 and 2 are the list of P and G matrices to be selected from. The results should be a list of two list of matrices of equal length.
-"ExtractTaxon<-function(taxon1,taxon2,list1,list2,trait_type) {
-  z<-read.csv(""G:/GIThub/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv"",header=TRUE,stringsAsFactors=FALSE)
-  #### Various decision trees for the grepl commands to get an appropiate subset of MatrixIndex to work on.
-  if (missing(trait_type)) {
-    q<-z[grepl(taxon2,z[,7]),]
-    q2<-q[grepl(taxon1,q[,6]),]
-  }
-  else if (missing(taxon2)) {
-    q<-z[grepl(taxon1,z[,6]),]
-    q2<-q[grepl(trait_type,q[,8]),]    
-  }
-  else if (missing(taxon1)) {
-    q<-z[grepl(taxon2,z[,7]),]
-    q2<-q[grepl(trait_type),q[,8]),]    
-  }
-  else if (missing(taxon1) & missing(taxon2)) {
-    q2<-z[grepl(trait_type,z[,8]),]    
-  }
-  else if (missing(taxon1) & missing(trait_type)) {
-    q2<-z[grepl(taxon2,z[,7]),]   
-  }
-  else if (missing(taxon2) & missing(trait_type) {
-    q2<-z[grepl(taxon1,z[,6]),]    
-  }
-  else if (!(missing(taxon2)|missing(taxon1)|missing(trait_type))) {
-    q<-z[grepl(taxon2,z[,7]),]
-    q1<-q[grepl(trait_type,q[,8])]
-    q2<-q1[grepl(taxon1,q1[,6]),]    
-  }
-  else {
-    print(""You have not entered any selection criteria"")
-    break
-  }
-  if (length(q2[,1]==0)){
-    print(""Sorry, that set of taxons and trait type does not exist in this data"")
-    return NULL
-    
-  }
-  else { ### Again usese implicit assumption of constant naming
-    modlist1<-list1[q2[,5]]
-    modlist2<-list2[q2[,5]] 
-    return(list(modlist1=modlist1,modlist2=modlist2))
-  }
-  ## Some output of if else tree used to get subset of p and G
-  ##### Its got to take taxon 1 and 2, get the subset of the data from Z and then compare names against those in list 1 and 2 to extract the relevant matrices
-
-}"
-
-
 #### Create list of empty csv file to later be filled with pmatrices from paper. Named files are made based on OrdDatDes pmatrix column.
 #blank_csvs<-function(dir1,dir2) { #### "H:/OrdDatDes.csv"  changed directory of data due to permission issues
 #  z<-read.csv(dir1,header=TRUE,stringsAsFactors=FALSE)
@@ -526,26 +475,7 @@ Psubmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproje
 
 ##### Extract Trait_type
 ##Directory Used MatasList("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices")
-ExtractTrait<-function(list2,trait_type) {
-  q<-list2
-  z<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
-  Subtrait<-q[grepl(trait_type,z$trait.type)]
-  return(Subtrait)
-}
 
-ExtractTaxon1<-function(list2,taxon1) {
-  q<-list2
-  z<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
-  Tax2<-q[grepl(taxon1,z$taxon)]
-  return(Tax2)
-}
-
-ExtractTaxon2<-function(list2, taxon.2) {
-  q<-list2
-  z<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
-  Tax1<-q[grepl(taxon.2,z$taxon2)]
-  return(Tax1)
-}
 #####
 ### Current directories dir1<-"C:/Users/s4284361/Documents/GitHub/Rproject/Pmatrices"
 # dir2<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs"
@@ -644,28 +574,6 @@ PthroughG2<-function(tests) { ## dir1 is the directory of P submatrices and dir2
   }
   return(list(ProjPG=ProjPG,Peigsto=Peigsto,Geigsto=Geigsto))
 }
-
-### comparison using original and increased sample set
-mypath<-file.path(paste(Gdir),paste("PtG&temp","_boxplot" ,paste("T5n=18"), ".pdf", sep = ""))
-pdf(file=mypath)
-boxplot(FiPtG[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,4.5))
-boxplot(FiPtG[[3]],add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
-boxplot(temp[[2]],col="grey",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
-boxplot(temp[[3]],add=TRUE, at=1.6:(5+0.6), boxwex=0.18,xaxt='n')
-dev.off()
-
-mypath<-file.path(paste(Gdir),paste("PtG&temp","_boxplot" ,paste("T5n=18"), ".pdf", sep = ""))
-pdf(file=mypath)
-boxplot(FiPtG[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,4.5))
-boxplot(FiPtG[[3]],add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
-boxplot(temp[[2]],col="grey",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
-boxplot(temp[[3]],add=TRUE, at=1.6:(5+0.6), boxwex=0.18,xaxt='n')
-dev.off()
-
-mypath<-file.path(paste(Gdir),paste("PtG&temp[[1]]","_boxplot" ,paste("T5n=18"), ".pdf", sep = ""))
-pdf(file=mypath)
-boxplot(temp[[1]],col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
-dev.off()
 
 #### Analysis changed to ignore trait_types. Variability was too large to discriminate between groups. Also, con1992.170 was removed due to correlation values far greater than 1.
 PG<-PaG()
