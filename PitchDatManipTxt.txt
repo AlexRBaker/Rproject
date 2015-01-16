@@ -1,0 +1,672 @@
+#### No library are imported to to run this code
+#### Need Pitcher's data set, the version on https://www.github.com/alexrbaker has had some minor modifications to 2 G matrices. 
+#### This version was used for later analysis and hence should be used for analysis instead of the original at https://github.com/DworkinLab/Pitchers_PTRS2014
+
+#### Much of the earlier code was manipulating Pitcher's data and their matrix index to create a new files for manually entering information.
+
+if (FALSE) { ## Wrapping earlier code in if statement so it doesn't get run by accident.
+
+### In the user case the "G:/GIThub/" should be replced with the directory where you have saved Pitcher's data.
+
+p<-list.files(path="G:/GIThub/Pitchers_PTRS2014/Data/Gmats_&_means_as_CSVs") #### Takes the names
+
+q<-list.files(path="G:/GIThub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs")
+
+z<-read.csv("G:/GIThub/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv",header=TRUE)
+
+datdes<-data.frame(matrix(NA,nrow=(length(p)+length(q)),ncol=15))  #### This is creating a data frame to store an entry for each P and G matrix from Pitcher's MatrixIndexFinal
+
+colnames(datdes)<-c("Paper","Organism","Raw data avilable", "Gmatrix","Pmatrix","cormatrix","directory","data link","Reference","Taxon1","Taxon2") #### Planed naming scheme for the new index file
+
+##Indicator function which creates no. row entries with a 0 or 1 for the Genetic covariance/correlation matrix. 1=presence, 0=absence with a corresponding paper key
+for (i in 1:(length(p)+length(q))) { ## Since the G covariances matrices were a subset of the G correlation matrices there might be two entries for a paper, one for the cov matrix and one for the cor matrix.
+  if (i<=length(p)) { ## Since p is the list of cov matrices for any counter in that list the resulting paper would have a cov
+    datdes[i,1]<-p[i]
+    datdes[i,4]<-1
+    datdes[i,6]<-0
+  }  else {
+   datdes[i,1]<-q[i-length(p)]   ## This is also as above except in this list the paper must have correlation matrix. Hence, the 0 and 1 are flipped around.
+   datdes[i,4]<-0
+   datdes[i,6]<-1
+  }
+  
+}
+
+dades2<-datdes[!grepl("list", datdes[,1]),]   ### subset of data with only csv titles from directory files (It would have made more sense to grepl(".csv"),) but the only non csv file has list in its name so this works as well.
+
+##### Retrieving information from matrixindexfinal and putting it into a new dataframe
+
+for (i in 1:(length(dades2[,1]))) { ###Loops over the rows of dades2
+  for (j in 1:length(z[,1])) { ### loops over the rows of Pitcher's MatrixIndexFinal
+    if (substr(dades2[i,1],1,7)==substr(z[j,4],1,7)) { ### Checks if the paper name matches, if it does it takes the relevant info from MatrixIndexFinal
+      dades2[i,2]<-paste(z[j,10])
+      dades2[i,9]<-paste(z[j,3])
+      dades2[i,10]<-paste(z[j,6])
+      dades2[i,11]<-paste(z[j,7])
+    }
+    else { ### Left empy as action should only be taken if the paper in both index files match.
+    }
+  }
+}
+
+
+### Removing multiple entries for multiple matrices made from submatrices of the one in the paper
+# (It has a counter for when the next entry is the same and only acts if there is a difference)
+## Note that this section is entirely dependent on the ordering of dades2. 
+## It will only remove duplicate cor/cov matrices for a paper not both. Hence, some papers will still have one entry for the covariance matrix and one for the correlation matrix.
+j=1 ### store the place were the rows last did not match.
+p=0 ### p is keeping position within the loop similar to i's function.
+k=1 ## k is storing the row position in the new datafra,e
+simsto<-data.frame(matrix(0,nrow=length(dades2[,1]),ncol=15))  ### creates dataframe that longer than is needed so it can be reduced later
+for (i in 1:length(dades2[,1])) { ### Loops over all the rows in dades2
+  if (substr(dades2[i,1],1,7)==substr(dades2[j,1],1,7)) { ## The loop cycles through all the files and when it notices a difference it makes a new entry.
+    p=p+1
+    }
+  else{ ### Here there would be a difference in the paper attached to the compared data frames
+    simsto[k,]<-dades2[j,]   ### Takes the row of dades2 and puts a copy into simsto
+    simsto[k,1]<-substr(dades2[j,1],1,7) #### Renames the matrix name to the paper name
+    p=p+1
+    j=p
+    k=k+1
+  }
+} ## The way the function was made need the last entry to be done manually since it acts at n+1 but the function end as n.
+simsto[k,]<-dades2[j,]
+simsto[k,1]<-substr(dades2[j,1],1,7)
+
+ #### Note that this loop was made redundant after learning about the duplicated function. The same result can be gotten by using 
+ ### simsto<-dades2[!duplicated(dades2[,1]),] This is because duplicated will return a list of True values where the same string shows up for the 2nd or later times and false otherwise. 
+ ###Hence, using !duplicated on the names will return each of the unique file names once.
+ 
+ 
+ 
+ 
+### Creates a new data frame which has removed all the empty rows in the simsto
+redsimsto<-simsto[simsto[,1]!=0,c(1,2,3,4,6,7,8,9,10,11,12)]
+colnames(redsimsto)<-c("Paper","Organism","Raw data avilable", "Gmatrix","cormatrix","directory","data link","Reference","Taxon1","Taxon2","Multiple Species")
+
+setwd("G:/GIThub/Rproject") #### Change this directory to the Rproject you installed from github.com/alexrbaker
+write.csv(file="pardatdes.csv", x=redsimsto,row.names=FALSE)  ### This is a partial data descriptio which removed some duplicate files.
+write.csv(file="dades2.csv", x=dades2,row.names=FALSE)  ### This writes the old file containing an entry for each matrix.
+
+#########
+###The paper name and a reference were found for each paper.
+
+############################# Checking the list of downloaded papers against the paper identifier in the pardatdesmanmod and reducing pardatdesmanmod to minimum number of rows.
+pdfz<-list.files(path="G:/GIThub/Papers") ###This list is not available as the pdfs of the research papers cannot be uploaded without permission of the copyright holder.
+tempsto<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/pardatdesmanmod.csv",header=TRUE,stringsAsFactors=FALSE)
+### This part was just a check that manual entering had gotten a pdf of the paper attached to each entry in simsto.
+
+######Creates a new matrix where both the cov and cor column are 1
+######if both matrices retrieved from one paper
+
+tempsto2<-data.frame(matrix(0,nrow=length(tempsto[,1]),ncol=15)) ## New data frame for merge cor and cov entries.
+for (i in 1:length(tempsto[,1])) { ### loops over the rows of tempsto
+  k=0
+  for (j in 1:length(tempsto[,1])) { ### Also loops over tempsto
+    if (substr(tempsto[i,1],1,7)==substr(tempsto[j,1],1,7) & i!=j) { ### check if the name is the same and the counter is not. This makes sure that it doesn't enter for duplicates.
+      tempsto2[i,]<-tempsto[i,]
+      tempsto2[i,c(4,5)]<-c(1,1) ### sets the index for both cor and cov mat to one since in this condition there used to be a separate entry for cov and cor.
+      k=k+1
+    }
+    else {
+      
+    }
+  }
+  if (k==0) { ### k stores the numer of duplicates. Hence, if k==0 then a entry must be made for the unique paper name.
+    tempsto2[i,]<-tempsto[i,]
+  }
+  else {
+    
+  }
+}
+
+
+tempsto2<-tempsto2[!duplicated(tempsto2[,1]),] ### Check which entrys have duplicates and makes a dataframe without dupalicates
+tempsto3<-tempsto2[order(tempsto2[,1]),] ### Orders the matrix alphabetically by the paper name string
+tempsto3[,16]<-rep(0,length=length(tempsto3[,1])) ### adding a new column ti temosto3
+for (i in 1:length(tempsto3[,1])) { ###loops over the rows of tempsto3
+  for (j in 1:length(pdfz)) { ###loops over the names in the list of pdfs
+    if (substr(tempsto3[i,1],1,7)==substr(pdfz[j],1,7)) { ### checks if the first 7 characters of the name matches. If so it stores an index.
+      tempsto3[i,16]<-1
+    }
+    else {
+      
+    }
+  }
+} ## This was just again checking that all the relevant pdfs were present
+ 
+
+setwd("C:/Users/s4284361/Documents/GitHub/Rproject") ### Change this to "......./Rproject" were ...../ is the directory you put the files from github
+write.csv(file="OrdDatDes.csv", x=tempsto3,row.names=FALSE) ### Takes the duplicate free ordered data and makes a new csv file for it. At this point the other indices made earlier can be discarded.
+tempsto3[tempsto3[,16]==0,][,1] #### Gets the subset of papers without a corresponding pdf #### checks those missing a pdf
+
+
+#### Used to make sure a pdf was retrieved for every entry.
+}
+
+###### Processing Gcor and Gcov matrices from Pritcher's paper.
+
+### First need to create list of path files. Making it a function to avoid clutter in work space
+#dir1<-"....../Pitchers_PTRS2014/Data/Gmats_&_means_as_CSVs/"
+#dir2<-"....../Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs/"
+
+## Given directory this function makes a list of the file names, appends it to the directory path and return this new list of directories.
+
+path_file <- function(dir1,dir2) {
+  if (missing(dir2)) {
+    p<-paste(dir1,list.files(path=dir1),sep="/")
+    return (list(dir1=p))
+  }
+  else {
+  q<-paste(dir2,list.files(path=dir2),sep="/") ####concatenates the directory and filenames
+  p<-paste(dir1,list.files(path=dir1),sep="/")
+  return (list(dir1=p,dir2=q))
+  }
+}
+#### later found that full.names is an option to get complete path_file for documents in a directory for list.files/dir.
+
+## From Pitcher's, create list of matrices for use in R modified to be  function.
+MatasList<-function(dir1,dir2){
+if (missing(dir2)) {
+  q<-path_file(dir1)
+  setwd(dir1)
+  matrices <- dir()
+  no.mats <- length(q[[1]][grepl("csv", q[[1]])])
+  matrix_list <- list()
+  
+  # this loop reads in each matrix from the folder of .csv files and writes
+  # them into a list
+  for (i in 1:no.mats) {
+    matrix_list[[i]] <- read.csv(q[[1]][grepl("csv", q[[1]])][i])
+  }
+  names(matrix_list) <- matrices[grepl("csv",q[[1]])]
+  return(matrix_list)
+}  
+else {
+q<-path_file(dir1,dir2)
+setwd(dir1)
+matrices <- dir()
+no.mats <- length(q[[1]][grepl("csv", q[[1]])])
+matrix_list <- list()
+
+# this loop reads in each matrix from the folder of .csv files and writes
+# them into a list
+for (i in 1:no.mats) {
+  matrix_list[[i]] <- read.csv(q[[1]][grepl("csv", q[[1]])][i])
+}
+names(matrix_list) <- matrices[grepl("csv",q[[1]])]
+
+#### Now for correlation matrices
+## From Pitcher's, create list of matrices for use in R.
+setwd(dir2)
+matricesc <- dir()
+no.matsc <- length(q[[2]][grepl("csv", q[[2]])])
+matrix_listc <- list()
+# this loop reads in each matrix from the folder of .csv files and writes
+# them into a list
+for (i in 1:no.matsc) {
+  matrix_listc[[i]] <- read.csv(q[[2]][grepl("csv", q[[2]])][i])
+}
+names(matrix_listc) <- matricesc[grepl("csv",q[[2]])]
+return (list(matrix_listc=matrix_listc,matrix_list=matrix_list))
+}
+}
+
+
+#### Write csv files from list function with appropiate name
+
+WriteMatList<-function(list,dir) {  ### takes a list and a directory to write the held matrices to.
+  for (i in 1:length(list)) {  ## #loops over the elements in the list.
+    setwd(dir) ### changes the directory for write.csv
+    write.csv(file=names(list[i]), x=list[[i]],row.names=FALSE) ### write the ith matrix with the name of the ith matrix from the list.
+  }
+}
+
+MaxnoTraits<- function(list) { ### takes n of an nxn matrix and compares it to the others. It return the largest n found. 
+  q<-0
+  for (i in list) {
+    p<-length(i[1,])
+    q<-max(p,q)
+  }
+  return(q)
+}
+
+#### Create list of empty csv file to later be filled with pmatrices from paper. Named files are made based on OrdDatDes pmatrix column.
+#blank_csvs<-function(dir1,dir2) { #### "H:/OrdDatDes.csv"  changed directory of data due to permission issues
+#  z<-read.csv(dir1,header=TRUE,stringsAsFactors=FALSE)
+#  q<-z[z[,12]>0,] ### subset of lines with pmatrices
+#  for (i in 1:length(q[,1])) {
+#    setwd(dir2)
+#    write.csv(paste(q[i,1],".1.csv",sep=""),x=NULL)
+#    write.csv(paste(q[i,1],".2.csv",sep=""),x=NULL)
+#  }
+#}
+#
+#blank_csvs("H:/OrdDatDes.csv","C:/Users/s4284361/Documents/GitHub/Rproject/Pmatrices")
+
+
+##### Note that con1992 might not be suitable to use due to unclear source of correlation matrix from Pitcher's data
+##### Con2003 was not currently used due to Vp =Vg+Ve not matching the Vp mentioned and table, might be due to descrepancy in the degrees of freedom of each. Will attempt to address this tomorrow.
+#### Del1995 omitted autocorrelations, this leaves some blanks in the matrix, it appears Pitcher's replaced these with 0s. Instead I might remove those traits as adding those zeros might affect the results.
+### Kau2003 lacked information in matrix for the phenotypic correlations
+
+
+### P matrices were searched for and manually entered as csv files basedon the list of pdfs checked and entered in OrdDatDes
+#### Function for creating a matrix index for the gathered Pmatrices which will be used to create all of the relevant submatrices for each corresponding G matrix.
+### 
+Pmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproject/Pmatrices"
+  p<-list.files(path=dir)
+  p<-p[grepl(".csv",p)] ### Takes only the csv files
+  q<-read.csv("H:/OrdDatDes.csv",header=TRUE,stringsAsFactors=FALSE) ## Reads in orderdatamatrix
+  z<-data.frame(matrix(NA,nrow=length(p),ncol=length(q)))
+  for (i in 1:length(p)) {
+    z[i,]<-q[grepl(substr(p[[i]],1,7),q[,1]),] ### checks the name of p against those in q and extracts the relecant row to put in z.
+    z[i,1]<-substr(p[[i]],1,9)
+  }
+  nam<-names(q) 
+  nam[1]<-"Pmatrix"
+  names(z)<-nam
+  z$GmatId<-rep(NA,length(z[,16]))
+  setwd("C:/Users/s4284361/Documents/GitHub/Rproject")
+    write.csv("Pmatindex.csv",x=z,row.names=FALSE)
+}
+## GmatId is the Gmatrix paired to the Pmatrix. This was entered manually and was dependent on the ordering done when gathering Pmatrices.
+
+##### Function which checks GmatId, get trait_type from MatrixIndexFinal and appends it as another column to PMatindex
+
+# dir1<-"....../Rproject/Pmatindex.csv" dir1 must lead to the Pmatindex created earlier.
+# dir2<-......../Pitchers_PTRS2014/Data/MatrixIndexFinal.csv" ### must lead to Pitchers MatrixIndexFinalc
+Trait_append<-function(dir1,dir2) {
+  q<-read.csv(dir1,stringsAsFactors=FALSE) ###Pmatindex
+  l<-read.csv(dir2,stringsAsFactors=FALSE) ####MatrixINdexFinal 
+  q$trait.type<-rep(NA,length(q[,1]))
+  for (i in 1:length(q[,1])) {
+    q[i,18]<-l[grepl(q[i,17],l[,5]),][8]
+  }
+  setwd("C:/Users/s4284361/Documents/GitHub/Rproject")
+  write.csv("PmatIndex.csv",x=q,row.names=FALSE)
+}
+### Appends trait.type and overwrite old Pmatindex
+
+#### Counter functionto get the dimension of each matrix in a list and the number of matrices of certain dimension.
+matdimcount<-function(list) {
+  p<-rep(0,length(list))
+    for (i in 1:length(list)) {
+      p[i]<-length(list[[i]][[1]])
+    }
+    q<-rep(0,max(p))
+    z<-rep(0,max(p))
+    for (i in 1:max(p)) {
+      q[i]<-sum(p>=i)
+      z[i]<-sum(p==i)
+    }
+    return (list(DimNum=p,DimGre=q,DimEqu=z))
+}
+
+
+### some of the variable names and loop logic is taken from Pitcher's 2014
+MatfromInd<-function(dir1,dir2){ ## dir1 <- "....../Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs" ##dir 2<-"....../Rproject/Pmatindex.csv" 
+    q<-path_file(dir1)
+    setwd(dir1)
+    matrices <- dir()
+    no.mats <- length(q[[1]][grepl(".csv", q[[1]])])
+    matrix_list <- list()
+    
+    # this loop reads in each matrix from the folder of .csv files and writes
+    # them into a list
+    for (i in 1:no.mats) {
+      matrix_list[[i]] <- read.csv(q[[1]][grepl(".csv", q[[1]])][i])
+    }
+    names(matrix_list) <- matrices[grepl(".csv",q[[1]])]
+    z<-read.csv(dir2,stringsAsFactors=FALSE)
+    GPmat<-list()
+    for (i in 1:length(z[,17])) {
+      GPmat[[i]]<-matrix_list[grepl(z[i,17],names(matrix_list))][[1]] ### checks and extracts the Gmatrix associated with a P matrix based on the GmatID given in dir 2
+      names(GPmat)[i]<-z[i,17] ### keeps the Gmatrice's name
+    return (GPmat) ### returns list of matrices
+}
+
+### Current directories dir1<-"....../Rproject/Pmatrices"
+# dir2<-"....../Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs"
+#dir3<-"......../Rproject/Pmatindex.csv"
+#dir4<-"......../Rproject/Psubmatrices"
+Psubmats<-function(dir1,dir2,dir3,dir4) { ### dir1 - Pmatrices , Gmatrices, dir3-Pmatindex, dir4-storagelocation
+  ### It is assumed dir1 is the larger matrix and dir 2 the list of smaller ones
+  
+  modmatsto=list()
+  p<-MatasList(dir1)## Creates list of P  matrices
+  q<-MatfromInd(dir2,dir3) ### creates list of relevant G matrices entreted in Pmatindex
+  q<-q[!duplicated(names(q))] ## removes any duplicates in q
+  z<-read.csv(dir3,stringsAsFactors=FALSE) ## reads in the Pmatindex file
+  for (i in 1:length(z[,1])) {
+    Pmat<-p[grepl(z[i,1],names(p))] ### takes the Pmatrix with the ith name in Pmatindex
+    Gmat<-q[grepl(z[i,17],names(q))] ## takes the Gmatrix with the ith GmatID in Pmatindex
+    matr<-data.frame(matrix(0,nrow=length(Pmat[[1]]),ncol=length(Gmat[[1]])))
+    colnames(matr)<-names(Gmat[[1]])
+    colnosto<-numeric(length(Gmat[[1]]))
+    pnam<-gsub(".","",names(Pmat[[1]]),fixed=TRUE) ## gets the trait names from Pmat
+    gnam<-gsub(".","",names(Gmat[[1]]),fixed=TRUE) ## gets the trait names from Gmat
+    for (m in 1:length(Gmat[[1]])) { ####loops over the names in Gmat
+      if (sum(grepl(gnam[m],pnam,ignore.case=TRUE))==1) { ### checks if there is one matching trait name in Pmat
+        matr[,m]<-Pmat[[1]][,grepl(gnam[m],pnam,ignore.case=TRUE)] ### takes the matching column from Pmat and stores it in matr
+        colnosto[m]<-match(TRUE,grepl(gnam[m],pnam,ignore.case=TRUE)) ## stores the column number
+      }
+      else if ((sum(grepl(gnam[m],pnam,ignore.case=TRUE))>1)) { ### checks if there is a similar name eg. lambweightjune and weightjune.
+        colno<-match(gnam[m],pnam) ### looks for an exact match in pnam and returns its index.
+        matr[,m]<-Pmat[[1]][,colno] ## Takes the column for that index and stores it.
+        colnosto[m]<-match(gnam[m],pnam) ## stores the column number for the trait taken from Pmat
+      }
+    }
+    matr<-matr[colnosto,] ## removes the rows for traits that aren't in Gmat
+    modmatsto[[names(Gmat)]]<-matr   #### name matrix with corresponding identifier from other list
+    }
+  for (j in 1:length(modmatsto)) {
+    names(modmatsto)[j]<-paste(names(modmatsto)[j],".csv",sep="") ### adds .csv to all the matrix names for easy writing
+  }
+  WriteMatList(modmatsto, dir4) ### writes all of the new submatrices into dir4
+  return (modmatsto) ### returns the list of Psubmatrices.
+}
+
+#cor<-MatasList(dir4) ### Took all P submatrices
+#cor<-listcov2cor(cor) ## changed them all to covariance matrices
+#WriteMatList(cor,dir4) ## writes them all as csv file so that all the Psubmatrices are covariance matrices
+
+### is.symmetric does not appear to treat the matrices from MatAsList as matrices. As such this function was made.
+listcov2cor<-function(list2) {
+  for (i in 1:length(list2)) {
+    if (sum(diag(as.matrix(list2[[i]])))!=length(list2[[i]])) {
+      varmat<-matrix(0,nrow=length(list2[[i]]),ncol=length(list2[[i]]))
+      var<-diag(as.matrix(list2[[i]]))
+      for (j in 1:length(list2[[i]])) {
+        for (k in 1:length(list2[[i]])) {
+          varmat[j,k]<-sqrt(var[j])*sqrt(var[k])
+      
+        }
+      }
+      list2[[names(list2[i])]]<-as.matrix(list2[[i]])/varmat
+    }
+    else {
+      
+    }
+  }
+  return (list2)
+}
+
+###### Function to extract only the data off certain length based on the no . of NAs in the row. Function is not going to be made scalable.
+sizeddata<-function(list2,size) { ##list2 is the result of PthroughG with a list contain 3 lists which contain dataframes
+ProjPG<-list2[[1]] 
+Peigsto<-list2[[2]]
+Geigsto<-list2[[3]]
+SProj<-data.frame(matrix(NA,nrow=length(ProjPG[,1]),ncol=size))
+SPeig<-data.frame(matrix(NA,nrow=length(ProjPG[,1]),ncol=size))
+SGeig<-data.frame(matrix(NA,nrow=length(ProjPG[,1]),ncol=size))
+counter<-1
+### PthroughG give data frames as long as the largestmatrixdimension. Hence, any smaller matrix has NAs for some of the entries.
+  for (i in 1:length(ProjPG[,1])){
+    if (is.na(match(NA,ProjPG[i,]))) { #####used to counter case where the there are no NAs since the size is equal to the largest matrix.
+      
+    }
+    else if (match(NA,ProjPG[i,])==(size+1)) {
+      SProj[counter,]<-ProjPG[i,1:size] ### takes the 1 to size columns from the dataframe
+      SPeig[counter,]<-Peigsto[i,1:size]
+      SGeig[counter,]<-Geigsto[i,1:size]
+      counter<-counter+1
+    }
+    else {
+      
+    }
+  }
+SProj<-SProj[1:(counter-1),]
+SPeig<-SPeig[1:(counter-1),]
+SGeig<-SGeig[1:(counter-1),]
+return(list(SProj,SPeig,SGeig))
+}
+#### Creating an index document for Psubmatrices
+Psubmatindex<-function(dir) { ## dir ="....../Rproject/Psubmatrices" 
+  p<-list.files(path=dir)
+  p<-p[grepl(".csv",p)] ### Takes only the csv files
+  q<-read.csv("......./Pitchers_PTRS2014/Data/MatrixIndexFinal.csv",header=TRUE,stringsAsFactors=FALSE) ## Reads in orderdatamatrix
+  m<-read.csv("......../Rproject/Pmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
+  z<-data.frame(matrix(NA,nrow=length(p),ncol=(length(q)+2)))
+  for (i in 1:length(p)) {
+    z[i,]<-q[grepl(strsplit(p[[i]],".csv"),q[,5]),]
+    z[i,15]<-m[grepl(strsplit(p[[i]],".csv"),m[,17]),paste(11)]
+    z[i,16]<-m[grepl(strsplit(p[[i]],".csv"),m[,17]),14]
+  }
+  nam<-names(q)
+  names(z)<-nam
+  names(z)[c(15,16)]<-c("Title","DOI")
+  setwd("....../Rproject")
+  write.csv("Psubmatindex.csv",x=z,row.names=FALSE)
+}
+
+
+####Current directories dir1<-"......./Rproject/Pmatrices"
+###dir2<-"......./Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs"
+##dir3<-"......../Rproject/Pmatindex.csv"
+#dir4<-"........./Rproject/Psubmatrices"
+
+#### P & G mats = list (will use matfromind and mataslist functions)
+PaG<-function() {
+  q<-MatasList("....../Rproject/Psubmatrices")
+  p<-ReMatfromInd("........./Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv") ## makes a list of the Gmatrices paired with the Psubmatrices
+  return  (list(Pcor=q,Gcor=p))
+}
+
+matsubsample<-function(PG,T_no) { ### randomly subsamples the matrices larger than T_no to create more matrices of size T_no
+  #### note PG is exptected to be the output of PaG(), a list two lists. The first of the lists is Pmats and second Gmats.
+  q<-PG[[1]]
+  p<-PG[[2]]
+  sto<-list(Psub=list(),Gsub=list())
+  k=1
+  for (i in 1:length(q)) {
+    if (length(q[[i]])<T_no) {
+      
+    }
+    else if (length(q[[i]])==T_no) {
+      sto[[1]][[k]]<-q[[i]]
+      names(sto[[1]])[k]<-strsplit(names(q[i]),".csv")
+      sto[[2]][[k]]<-p[[i]]
+      names(sto[[2]])[k]<-strsplit(names(p[i]),".csv")
+      k=k+1
+    }
+    else if (length(q[[i]])>T_no) {
+      randno<-sample(1:length(q[[i]]),T_no)
+      sto[[1]][[k]]<-q[[i]][randno,randno]
+      names(sto[[1]])[k]<-strsplit(names(q[i]),".csv")
+      sto[[2]][[k]]<-p[[i]][randno,randno]
+      names(sto[[2]])[k]<-strsplit(names(p[i]),".csv")
+      k=k+1
+    } 
+    else {
+      
+    }
+  }
+  return (sto)
+}
+#### command used for above function ReMatfromInd("......./Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv")
+
+ReMatfromInd<-function(dir1,dir2){ ## dir1 <- cor matrix folder ##dir 2 PmatIndex file_file
+  q<-path_file(dir1)
+  setwd(dir1)
+  matrices <- dir()
+  no.mats <- length(q[[1]][grepl(".csv", q[[1]])])
+  matrix_list <- list()
+  
+  # this loop reads in each matrix from the folder of .csv files and writes
+  # them into a list
+  for (i in 1:no.mats) {
+    matrix_list[[i]] <- read.csv(q[[1]][grepl(".csv", q[[1]])][i])
+  }
+  names(matrix_list) <- matrices[grepl(".csv",q[[1]])]
+  z<-read.csv(dir2,stringsAsFactors=FALSE)
+  GPmat<-list()
+  for (i in 1:length(z[,5])) {
+    GPmat[[i]]<-matrix_list[grepl(z[i,5],names(matrix_list))][[1]]
+    names(GPmat)[i]<-z[i,5]
+  }
+  return (GPmat) ### return list of list of list
+}
+
+#### modified P through G to accept list instead of dir
+PthroughG2<-function(tests) { ## dir1 is the directory of P submatrices and dir2 is the dir containing the G matrices
+  Pmats<-tests[[1]]
+  Gmats<-tests[[2]] ### creates list of relevant G matrices entreted in Pmatindex
+  ProjPG<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
+  Peigsto<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
+  Geigsto<-matrix(NA,nrow=length(Pmats),ncol=MaxnoTraits(Pmats))
+  nullnames<-rep(0,length(Pmats))
+  rownames(ProjPG)<-nullnames
+  rownames(Peigsto)<-nullnames
+  rownames(Geigsto)<-nullnames
+  for (i in 1:length(Pmats)) {
+    Psto<-Pmats[grepl(names(Gmats[i]),names(Pmats))]
+    Gsto<-Gmats[grepl(names(Gmats[i]),names(Pmats))]
+    rownames(ProjPG)[i]<-names(Gmats[i])
+    rownames(Peigsto)[i]<-names(Gmats[i])
+    rownames(Geigsto)[i]<-names(Gmats[i])
+    for (j in 1:length(Psto[[1]][,1])){
+      ProjPG[i,j]<-t((eigen(Psto[[1]],symmetric=TRUE)$vectors[,j]))%*%as.matrix(Gsto[[1]])%*%(eigen(Psto[[1]],symmetric=TRUE)$vectors[,j])
+      Peigsto[i,j]<-eigen(Psto[[1]],symmetric=TRUE)$values[j]
+      Geigsto[i,j]<-eigen(Gsto[[1]],symmetric=TRUE)$values[j]
+    }
+  }
+  return(list(ProjPG=ProjPG,Peigsto=Peigsto,Geigsto=Geigsto))
+}
+
+#### Analysis changed to ignore trait_types. Variability was too large to discriminate between groups. Also, con1992.170 was removed due to correlation values far greater than 1.
+PG<-PaG()
+tests<-matsubsample(PG,5)
+lkt<-tests
+names(lkt[[1]])<-paste(names(lkt[[1]]),".csv",sep="")
+names(lkt[[2]])<-paste(names(lkt[[2]]),".csv",sep="")
+WriteMatList(lkt[[1]],"C:/Users/s4284361/Documents/GitHub/Rproject/Psubsampledmatrices")
+WriteMatList(lkt[[2]],"C:/Users/s4284361/Documents/GitHub/Rproject/Gsubsampledmatrices")
+test2<-PthroughG2(tests)
+
+Gdir<-"C:/Users/s4284361/Documents/GitHub/Rproject/Graphs"
+
+mypath<-file.path(paste(Gdir),paste("P&G","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(test2[[3]],col="white",boxwex=0.25,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
+boxplot(test2[[2]],col="grey",add=TRUE, at=1.3:(5+0.3), boxwex=0.25,xaxt='n')
+legend(x="topright", c("Genetic Correlation","Phenotypic Correlation"), fill=c("white","grey"))
+dev.off()
+
+
+mypath<-file.path(paste(Gdir),paste("PthroughG","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(test2[[1]],col="white",boxwex=0.25,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
+legend(x="topright", c("P%*%G%*%P"), fill=c("White"))
+dev.off()
+
+mypath<-file.path(paste(Gdir),paste("All3","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(test2[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,max(test2[[1]])))
+boxplot(test2[[3]],add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+boxplot(test2[[1]],col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
+legend(x="topright", c("Phenotypic correlation","Genotypic correlation","Projection of P through G"), fill=c("white","grey","gray42"))
+dev.off()
+
+z<-(test2$Peigsto-test2$Geigsto)
+
+mypath<-file.path(paste(Gdir),paste("difP&G","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(z,col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Difference in scaled variance")
+legend(x="topleft", c("eig(P)-eig(G)"), fill=c("grey"))
+abline(0,0,lty=2)
+dev.off()
+
+
+##Differences between P and G for Trait types
+mn<-data.frame(matrix(0,nrow=43,ncol=16))
+z<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
+for (i in 1:length(names(tests[[1]]))) {mn[i,]<-z[grepl(names(tests[[1]])[i],z$filename),]}
+
+PsubtraitM<-tests[[1]][grepl("M",mn[,8])]
+PsubtraitS<-tests[[1]][grepl("S",mn[,8])]
+PsubtraitL<-tests[[1]][grepl("L",mn[,8])]
+GsubtraitM<-tests[[2]][grepl("M",mn[,8])]
+GsubtraitS<-tests[[2]][grepl("S",mn[,8])]
+GsubtraitL<-tests[[2]][grepl("L",mn[,8])]
+
+subM<-list(PsubtraitM,GsubtraitM)
+subS<-list(PsubtraitS,GsubtraitS)
+subL<-list(PsubtraitL,GsubtraitL)
+
+MPtG<-PthroughG2(subM)
+SPtG<-PthroughG2(subS)
+LPtG<-PthroughG2(subL)
+
+DifM<-(MPtG[[2]]-MPtG[[3]])
+DifS<-(SPtG[[2]]-SPtG[[3]])
+DifL<-(LPtG[[2]]-LPtG[[3]])
+
+mypath<-file.path(paste(Gdir),paste("SplitT_P","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(DifL,col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="eig(P) - eig(G)")
+boxplot(DifM,col="grey",add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+boxplot(DifS,col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
+abline(0,0,lty=2)
+legend(x="bottomright", c("Life History - 7","Morphology - 26","Sexually Selected - 10"), fill=c("white","grey","gray42"))
+dev.off()
+
+### INcluding compiled dataset
+z<-(test2$Peigsto-test2$Geigsto)
+
+mypath<-file.path(paste(Gdir),paste("SplitT_P&All","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(DifL,col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="eig(P) - eig(G)",ylim=c(-1.7,1))
+boxplot(DifM,col="grey",add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+boxplot(DifS,col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
+boxplot(z,col="black",add=TRUE, at=1.6:(5+0.6), boxwex=0.18, xaxt='n')
+abline(0,0,lty=2)
+legend(x="bottomright", c("Life History - 7","Morphology - 26","Sexually Selected - 10", "All -43"), fill=c("white","grey","gray42","black"))
+dev.off()
+
+mypath<-file.path(paste(Gdir),paste("SplitT_PtG","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(LPtG[[1]],col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="P'GP",ylim=c(min(MPtG[[1]][,5]),max(MPtG[[1]][,1])))
+boxplot(MPtG[[1]],col="grey", add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+boxplot(SPtG[[1]],col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
+legend(x="topright", c("Life History - 7","Morphology - 26","Sexually Selected - 10"), fill=c("white","grey","gray42"))
+abline(1,0,lty=2)
+dev.off()
+
+
+#### Splitting data by plant/animal taxon
+PtaxonA<-tests[[1]][grepl("A",mn[,7])]
+PtaxonP<-tests[[1]][grepl("P",mn[,7])]
+GtaxonA<-tests[[2]][grepl("A",mn[,7])]
+GtaxonP<-tests[[2]][grepl("P",mn[,7])]
+
+subA<-list(PtaxonA,GtaxonA)
+subP<-list(PtaxonP,GtaxonP)
+
+APtG<-PthroughG2(subA)
+PPtG<-PthroughG2(subP)
+
+DifA<-(APtG[[2]]-APtG[[3]])
+DifP<-(PPtG[[2]]-PPtG[[3]])
+
+mypath<-file.path(paste(Gdir),paste("SplitTaxon","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(DifA,col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="eig(P) - eig(G)")
+boxplot(DifP,col="grey",add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+abline(0,0,lty=2)
+legend(x="bottomright", c("Animal -32","Plant -11"), fill=c("white","grey"))
+dev.off()
+
+mypath<-file.path(paste(Gdir),paste("SplitTaxonPGP","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(APtG[[1]],col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="P'GP")
+boxplot(PPtG[[2]],col="grey",add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
+abline(0,0,lty=2)
+legend(x="topright", c("Animal -32","Plant -11"), fill=c("white","grey"))
+dev.off()
+
+
+nullmat<-matrix(0,nrow=length(test2[[1]][,1]),ncol=15)
+nullmat[,1:5]<-test2[[1]]
+nullmat[,6:10]<-test2[[2]]
+nullmat[,11:15]<-test2[[3]]
