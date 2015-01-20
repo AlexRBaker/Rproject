@@ -132,7 +132,11 @@ Read More: http://www.esajournals.org/doi/abs/10.1890/04-1209
 
 
 ####
+Auxilliary support papers:
+Probabilities of Non-Positive Definite between-Group or Genetic Covariance Matrices - good for mentioning sampling error and the likelihood of non-positive definite
+Comparative quantitative genetics: evolution of the G matrix
+Population Structure of Morphological Traits in Clarkia dudleyana. II. Constancy of Within-Population Genetic Variance
+Phylogenetic Analysis of Phenotypic Covariance Structure. I. Contrasting Results from Matrix Correlation and Common Principal Component Analysis
 
-
-
+Tracy-Widom correlation matrices - Edge universality of correlation matrices
 #### Archive data on DRYAD or similar service in last week or two before end of project.

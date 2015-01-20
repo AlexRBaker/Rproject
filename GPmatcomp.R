@@ -1,6 +1,4 @@
-
 library("MASS")
-library("Matrix")
 ###Start of Iain's code#####
 
 genspec <- function(c1,c2,x,range,step) {
@@ -111,14 +109,11 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
   
   LisG<-vector("list",k)
   LisP<-vector("list",k)
-  LisGR<-vector("list",k)
-  LisPinG<-vector("list",k)
   varmat<-matrix(0,nrow=k,ncol=p)
   Peig<-matrix(0,nrow=k,ncol=p)
   Gvarmat<-matrix(0,nrow=k,ncol=p)
   newmx<-matrix(0,nrow=k,ncol=p)
   remssl<-matrix(0,nrow=k,ncol=p)
-  PinGeig<-matrix(0,nrow=k,ncol=p)
   for (i in 1:k){
     Y <- gendat(p,n,r,SigmaA,SigmaE)
     Yssp <- ssp(Y,n,r)
@@ -128,11 +123,6 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
       LisP[[i]]<-cov2cor(LisP[[i]])
     }
     LisG[[i]]<-manov(Yssp$W, Yssp$B, n,r)$G
-    LisGR[[i]]<-nearPD(LisG[[i]],corr=TRUE)$mat
-    LisPinG[[i]]<-LisG[[i]]
-    diag(LisPinG[[i]])<-diag(LisP[[i]])
-    corLisPinG[[i]]<-cov2cor(LisPinG[[i]])
-    PinGeig[i,]<-eigen(LisPinG[[i]])$values
     newmx[i,] <- manov(Yssp$W, Yssp$B, n,r)$eige1
     Gvarmat[i,]<-sort(diag(manov(Yssp$W, Yssp$B, n,r)$G),decreasing=TRUE)
     varmat[i,]<-sort(diag(var(Y)),decreasing=TRUE)
@@ -210,34 +200,5 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
   abline(mean(diag(SigmaE)+diag(SigmaA)),0,lty=2)
   dev.off()
 
-  return(list(LisP=LisP,LisG=LisG,remssl=remssl,LisGR=LisGR, Peig=Peig,newmx=newmx))
+  return(list(LisP=LisP,LisG=LisG,remssl=remssl,Peig=Peig,newmx=newmx))
 }
-
-q<-GPmatcomp(5,50,5,0*diag(5),diag(5),200,"C:/ABakeSumProj",cor=TRUE)
-angle<-matrix(0,nrow=length(q$LisP),ncol=length(q$LisP[[1]][,1]))
-for (i in 1:length(q$LisP)) {
-  for (j in 1:length(q$LisP[[1]][,1])) {
-    angle[i,j]<-acos(eigen(q$LisP[[i]])$vectors[,j]%*%eigen(q$LisG[[i]])$vectors[,j])*180/pi
-  }
-}
-
-z<-colMeans(angle)
-
-q<-GPmatcomp(5,50,5,0*diag(5),diag(5),200,"C:/ABakeSumProj",cor=FALSE)
-PPP<-matrix(0,nrow=length(q$LisP),ncol=length(q$LisP[[1]][,1]))
-for (i in 1:length(q$LisP)) {
-  for (j in 1:length(q$LisP[[1]][,1])) {
-    PPP[i,j]<-(eigen(q$LisP[[i]])$vectors[,j]%*%q$LisP[[i]]%*%eigen(q$LisP[[i]])$vectors[,j])
-  }
-}
-
-q<-GPmatcomp(5,50,5,0*diag(5),diag(5),200,"C:/ABakeSumProj",cor=TRUE)
-angle<-matrix(0,nrow=length(q$LisP),ncol=length(q$LisP[[1]][,1]))
-for (i in 1:length(q$LisP)) {
-  for (j in 1:length(q$LisP[[1]][,1])) {
-    angle[i,j]<-acos(eigen(q$LisP[[i]])$vectors[,1]%*%eigen(q$LisG[[i]])$vectors[,j])*180/pi
-  }
-}
-
-setwd("C:ABakeSumProj")
-
