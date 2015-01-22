@@ -125,11 +125,13 @@ The quantitative genetics of phenotypic variation in animals
 Patterns of quantitative genetic variation in multiple dimensions
 #### 19/01/15
 A REASSESSMENT OF GENETIC LIMITS TO EVOLUTIONARY CHANGE
-Patterns of quantitative genetic variation in multiple dimensions
 
 
 Read More: http://www.esajournals.org/doi/abs/10.1890/04-1209
 
+
+#####
+Review paper of Cheverud's gambit: Testing the phenotypic gambit: phenotypic, genetic and environmental correlations of colour
 
 ####
 Auxilliary support papers:
@@ -138,5 +140,58 @@ Comparative quantitative genetics: evolution of the G matrix
 Population Structure of Morphological Traits in Clarkia dudleyana. II. Constancy of Within-Population Genetic Variance
 Phylogenetic Analysis of Phenotypic Covariance Structure. I. Contrasting Results from Matrix Correlation and Common Principal Component Analysis
 
-Tracy-Widom correlation matrices - Edge universality of correlation matrices
+Tracy-Widom correlation matrices - Edge universality of correlation matrices - seems to support asymptotic TW for gaussian correlation matrices.
+Tracy-Widom law for the extreme eigenvalues of sample correlation matrices - proof of TW for extreme eigenvalues of a correlation matrix.
 #### Archive data on DRYAD or similar service in last week or two before end of project.
+correlation - possible supporting paper sfor TW distribution. 
+On spectral properties of large dimensional correlation matrices and covariance matrices computed from elliptically distributed data
+
+
+################## Current list of papers from following references in cheverud, and cheverud referential papers.
+
+1. Testing cehveruds conjecture for behavioural correlations and behavioural syndromes
+2. Tesing the phenotypic gambit: phenotypic, genetic and environmental correlations of colour.
+3. Quantitative genetics adn adevelopmental constraints on evolution by selection. A comparison of genotypic and phenotypic correlations.
+4. Life history Evolution
+5. Evolutionary quantitative genetics.
+6. Adaptive radiation along lines of least genetic resistance.
+7. Comparitative quantitative genetics: evolution of the G matrix.
+8. Can one predict hte evolution of quantitative characters without genetics.
+9. The estimation of genetic corrleations from phenotypic correlations - a test of cehverud's conjecture
+10. New answers for old questions: the evolutionary quantitative genetics of wild animal populations.
+11. The phenotypic and genetic covariance _____ of drosophilid wings.
+12. Determining the effective dimensionality of the genetic variance-covariance matrix.
+13. A reassessment of genetic limits to evolutionary change.
+14. Abundant genetic variation + strong selection = multivariate genetic constraints: a geometric view of adaptation. 
+15. Natural selection and the heritability of fitness components.
+16. Quanttiative genetics of the dung fly sepsis caipseas: chereuvud conjecture revisited.
+17. Genetic and phenotypic correlations in plants: a botanical test of cheruvud's conjecture.
+18. facolner - rp=rghxhy+rEexey
+19. Evolutionary quantitative genetics: How little do we know?
+19. Genetics and the analysis of quantitative traits.
+20. Quantitative traits and fintest: lessons from drosophila
+21. Grafen 1984 - natural selections, kin selection, and group selection.
+22. Genetic and phenotypic models of natural selcetion.
+23. How precise are genetic correlation estimates.
+24. The efect of environmental variation on the heritability of traits of a field cricket.
+25. The efffect of environment variabikity on the genetic correlation structure in field cricket.
+26? Grafen - modelling in behavioural ecology
+27. Natural heritabilities: can they be reliably estimated in teh laboratory. 
+28. Can natural phenotypic variance be estimated reliably under homogenous laboratory conditions.
+29. Laboratory and field heritabilties: some lessons from drosophila.
+20. Introduction: The evolution of morphology, performance and fitness.
+31. Probabilities of of non-positive definite between-group or genetic covariance matrices.
+32. Tacy-Widom law for the extreme eigenvalues of sample correlation matirces.
+33. The distribution of genetic variance across phenotypic sapce and the response to selection.
+35. Phenotypic divergence along line of genetic variance. 
+36. evolutionary constraints in high dimensional traits
+37: vVariance component estimate in animal breeding: a review.
+38. An evolutionary relationship between genetic variation and phenotypic fluctuation.
+39. Reduced sampling variance of esitmates of genetic paramets and the difference between genetic and phenotypic correlations.
+40. wing size heritability in a natural population of drosohila suboscura.
+41. Heritability of size but not symmetry in a sexually seleted trait selected by female earwigs. 
+42. expression of additive genetic variances and covariances for wild radish floral traits.___ between field and green house environments.'
+43. Heritability and "evolvability" of meristic chracters in a natural population of Gasterosteus aculeatus.
+44. Measuring and comparing evolvability and constraint in multivariate characters.
+
+
