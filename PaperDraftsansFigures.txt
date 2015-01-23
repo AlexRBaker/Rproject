@@ -173,8 +173,8 @@ On spectral properties of large dimensional correlation matrices and covariance 
 21. Grafen 1984 - natural selections, kin selection, and group selection.
 22. Genetic and phenotypic models of natural selcetion.
 23. How precise are genetic correlation estimates.
-24. The efect of environmental variation on the heritability of traits of a field cricket.
-25. The efffect of environment variabikity on the genetic correlation structure in field cricket.
+24. The efect of environmental variability on the heritability of traits of a field cricket.
+25. The efffect of a variable environment on the genetic correlation structure in field cricket.
 26? Grafen - modelling in behavioural ecology
 27. Natural heritabilities: can they be reliably estimated in teh laboratory. 
 28. Can natural phenotypic variance be estimated reliably under homogenous laboratory conditions.
@@ -193,5 +193,5 @@ On spectral properties of large dimensional correlation matrices and covariance 
 42. expression of additive genetic variances and covariances for wild radish floral traits.___ between field and green house environments.'
 43. Heritability and "evolvability" of meristic chracters in a natural population of Gasterosteus aculeatus.
 44. Measuring and comparing evolvability and constraint in multivariate characters.
-
+45. Estimating genetic correlations in natural populations
 

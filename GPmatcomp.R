@@ -202,3 +202,12 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
 
   return(list(LisP=LisP,LisG=LisG,remssl=remssl,Peig=Peig,newmx=newmx))
 }
+
+
+TWshift<-function(vec,n,p) {
+  m<-rep(0,length(vec))
+  for (i in 1:length(vec)) {
+    m[i]<-(n*vec[i]-(sqrt(p)+sqrt(n))^(2))/((sqrt(n)+sqrt(p))*((1/sqrt(p)+1/sqrt(n))^(1/3)))
+  }
+  return (m)
+}
