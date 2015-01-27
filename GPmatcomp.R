@@ -204,10 +204,61 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
 }
 
 
-TWshift<-function(vec,n,p) {
+TWshift<-function(vec,n,p) { ### n = no individuals, p = no traits
   m<-rep(0,length(vec))
   for (i in 1:length(vec)) {
     m[i]<-(n*vec[i]-(sqrt(p)+sqrt(n))^(2))/((sqrt(n)+sqrt(p))*((1/sqrt(p)+1/sqrt(n))^(1/3)))
   }
   return (m)
 }
+
+
+n<-sqrt(q$newmx[,1])/mean(q$newmx[,1])
+l<-sqrt(q$Peig)/colMeans(q$Peig)
+l2<-sqrt(q$newmx[,1:3])/rep(colMeans(q$newmx[,1:3]),each=1000)
+n1<-sqrt(q$newmx[,1])/mean(q$newmx[,1])
+n2<-sqrt(q$newmx[,2])/mean(q$newmx[,2])
+n3<-sqrt(q$newmx[,3])/mean(q$newmx[,3])
+
+z<-data.frame(matrix(NA,nrow=1000,ncol=3))
+z[,1]<-n1
+z[,2]<-n2
+z[,3]<-n3
+mypath <- file.path(paste(directory),paste("CV" ,paste("_p",10,"n",50,"r",5,"k",1000,sep=""), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(l2,boxwex=0.3, col='grey', xaxis=NULL, ylim=c(0.8,max(l2)),xlab="Eigenvector",ylab="coefficient of variance")
+boxplot(l[,1:3],boxwex=0.3, col='white', xaxis=NULL,add=TRUE,at=1:3+0.3)
+legend(x="bottomleft", fill=c("grey","white"), legend=c("CV(G)","CV(P)"))
+dev.off()
+
+rand<-GPmatcomp(10,50,5,0*diag(10),diag(10),1000, "c:/ABakeSumProj",cor=TRUE)
+ranTW<-TWshift(rand$Peig[,1],250,10)
+ransimTW<-rtw(1000,beta=1)
+ransimTW2<-rtw(1000,beta=2)
+
+mypath <- file.path(paste("C:/ABakeSumProj"),paste("TW_sim_versus_obs2" ,paste("_p",10,"n",50,"r",5,"k",1000,sep=""), ".pdf", sep = ""))
+pdf(file=mypath)
+boxplot(ransimTW,boxwex=0.2, col='grey', xaxis=NULL,at=1)
+boxplot(ranTW,boxwex=0.2, col='white', xaxis=NULL,add=TRUE,at=0.8)
+boxplot(ransimTW,boxwex=0.2, col='grey42', xaxis=NULL,add=TRUE,at=1.2)
+legend(x="bottomleft", fill=c("white","grey","grey42"), legend=c("shifted","simulatedTW1","simulatedTW2"))
+dev.off()
+
+
+mypath <- file.path(paste("C:/ABakeSumProj"),paste("QQTW" ,paste("_p",10,"n",50,"r",5,"k",10000,sep=""), ".pdf", sep = ""))
+pdf(file=mypath)
+qqplot(ransimTW,ranTW,xlab="Shifted and rescaled Correlation matrix eigenvalues",ylab="Randomly simulated Tracy-Widom rescaling")
+qqline(ransimTW,distribution=rtw)
+dev.off()
+
+mypath <- file.path(paste("C:/ABakeSumProj"),paste("Coefficient_of_variation" ,paste("_p",10,"n",50,"r",5,"k",10000,sep=""), ".pdf", sep = ""))
+pdf(file=mypath)
+plot(1:10,sqrt(diag(var(Nrand$newmx)))/colMeans(Nrand$newmx),ylab="CV",xlab="Eigenvalues",pch=0,bg="grey")
+points(1:10,sqrt(diag(var(Nrand$Peig)))/colMeans(Nrand$Peig),pch=15)
+legend(x="topright",fill=c("white","black"), legend=c("G_eigenvalues","P_eigenvalues"))
+dev.off()
+
+mypath <- file.path(paste("C:/ABakeSumProj"),paste("Coefficient_of_variation for P" ,paste("_p",10,"n",50,"r",5,"k",10000,sep=""), ".pdf", sep = ""))
+pdf(file=mypath)
+plot(1:10,sqrt(diag(var(Nrand$Peig)))/colMeans(Nrand$Peig),ylab="CV",xlab="Eigenvalues",pch=15,bg="grey")
+dev.off()
