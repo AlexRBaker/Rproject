@@ -268,6 +268,8 @@ mypath <- file.path(paste("C:/ABakeSumProj"),paste("Coefficient_of_variation for
 pdf(file=mypath)
 plot(1:10,sqrt(diag(var(Nrand$Peig)))/colMeans(Nrand$Peig),ylab="CV",xlab="Eigenvalues",pch=15,bg="grey")
 dev.off()
+
+
 Multrun<-function(p,n,r) {
   z<-vector("list",length(p))
 for ( i in 1:length(p)) {
@@ -305,7 +307,7 @@ TWidomTest<-function(index, r,p, k,directory,cor, graph,PaGlist) { ### Issue wit
     Pmax<-0
     TWd<-0
     for (j in 1:k) {
-      l[j]<-p^(2/3)*((q[[i]]$newmx[j,1])-2)
+      l[j]<-p^(2/3)*((q[[i]]$Peig[j,1])-2)
     }
     Md<-mean(l)
     Sd<-sd(l)
@@ -313,5 +315,5 @@ TWidomTest<-function(index, r,p, k,directory,cor, graph,PaGlist) { ### Issue wit
     TWd<-(-1.206+(1.268/Sd)*(Pmax+Md))
     ObsTW[i]<-TWd
   }
-  return (ObsTW)
+  return (list(ObsTW,l))
 }
