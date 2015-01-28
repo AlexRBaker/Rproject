@@ -295,19 +295,21 @@ PonNconv<-function(p,r,index) {
 }
 
 
-TWidomTest<-function(index, r,p, k,directory,cor, graph,PaGlist) {
-  q<-vector("list",k)
+TWidomTest<-function(index, r,p, k,directory,cor, graph,PaGlist) { ### Issue with Pmax and TWd
+  q<-vector("list",length(PaGlist[,1]))
   Q<-PonNconv(p,r,index)
-  ObsTW<-rep(0,length(z[,]))
-  for (i in 1:length(z[,])) {
-    q[i]<-GPmatcomp(p,Q[i],r,k,directory,cor,graph)
+  ObsTW<-rep(0,length(PaGlist[,1]))
+  for (i in 1:length(PaGlist[,1])) {
+    q[[i]]<-GPmatcomp(p,Q[i],r,0*diag(p),diag(p),k,directory,cor,graph)
     l<-rep(0,k)
+    Pmax<-0
+    TWd<-0
     for (j in 1:k) {
-      l[j]<-p^(2/3)*(max(q$newmx[k,])-2)
+      l[j]<-p^(2/3)*((q[[i]]$newmx[j,1])-2)
     }
     Md<-mean(l)
     Sd<-sd(l)
-    Pmax<-p^(2/3)*(PaGlist[[3]][i,1]-2)
+    Pmax<-p^(2/3)*(PaGlist[i,1]-2)
     TWd<-(-1.206+(1.268/Sd)*(Pmax+Md))
     ObsTW[i]<-TWd
   }
