@@ -498,26 +498,26 @@ matsubsample<-function(PG,T_no) {
   sto<-list(Psub=list(),Gsub=list())
   k=1
   for (i in 1:length(q)) {
-    if (length(q[[i]])<T_no) {
+    if (length(q[[i]][1,])<T_no) {
       
     }
-    else if (length(q[[i]])==T_no) {
+    else if (length(q[[i]][1,])==T_no) {
       sto[[1]][[k]]<-q[[i]]
       names(sto[[1]])[k]<-strsplit(names(q[i]),".csv")
       sto[[2]][[k]]<-p[[i]]
       names(sto[[2]])[k]<-strsplit(names(p[i]),".csv")
       k=k+1
     }
-    else if (length(q[[i]])>T_no) {
-      randno<-sample(1:length(q[[i]]),T_no)
-      sto[[1]][[k]]<-q[[i]][randno,randno]
+    else if (length(q[[i]][1,])>T_no) {
+      randno<-sample(1:length(q[[i]][1,]),T_no)
+      sto[[1]][[k]]<-q[[i]][randno, randno]
       names(sto[[1]])[k]<-strsplit(names(q[i]),".csv")
-      sto[[2]][[k]]<-p[[i]][randno,randno]
+      sto[[2]][[k]]<-p[[i]][randno, randno]
       names(sto[[2]])[k]<-strsplit(names(p[i]),".csv")
       k=k+1
+      print(names(sto[[2]][k]))
     } 
-    else {
-      
+    else {      
     }
   }
   return (sto)

@@ -279,16 +279,16 @@ for ( i in 1:length(p)) {
 
 GreaterthanNindx<-function(index,n,dir) {
   m<-read.csv(index,header=TRUE,stringsAsFactors=FALSE)
-  q<-m[m[,9]>5,]
-  write.csv(q,file=paste(dir,>=nsubmats,sep="/"),row.names=FALSE)
+  q<-m[m[,9]>=5,]
+  write.csv(q,file=paste(dir,"nsubmats.csv",sep="/"),row.names=FALSE)
   return(q)
 }
 
 PonNconv<-function(p,r,index) {
-  z<-read.csv(index, header=TRUE,stringsAsFactors=FALSE)
+  z<-read.csv(file=index, header=TRUE,stringsAsFactors=FALSE)
   m<-rep(0,length(z[,1]))
   for (i in 1:length(z[,1])) {
-    m[i]<-z[i,(column of organism number)] -z[i,(column of organism numbers)]%%r
+    m[i]<-z[i,17] -z[i,17]%%r
     m[i]<-m[i]/r
   }  
   return (m)
