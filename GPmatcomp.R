@@ -105,10 +105,11 @@ gendat <- function(p,n,r, SigmaA, SigmaE){
 ###### simulated data is made a multivariate normal with covariance matrix equal to either SigmaA or SigmaE to get differ
 ###### Directory is the location wher you wish the graphs to be saved. It needs ti be done as a string. Eg if you wish to save to C:/testfolder you must input "C:/testfolder"
 ## Start of work by Alex
-GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
+GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor, graph) {
   
   LisG<-vector("list",k)
   LisP<-vector("list",k)
+  LisPC<-vector("list",k)
   varmat<-matrix(0,nrow=k,ncol=p)
   Peig<-matrix(0,nrow=k,ncol=p)
   Gvarmat<-matrix(0,nrow=k,ncol=p)
@@ -120,7 +121,7 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
     remssl[i,]<-reml(Yssp$W,Yssp$B,n,r)$lamB
     LisP[[i]]<-var(Y)
     if (cor==TRUE) {
-      LisP[[i]]<-cov2cor(LisP[[i]])
+      LisPC[[i]]<-cov2cor(LisP[[i]])
     }
     LisG[[i]]<-manov(Yssp$W, Yssp$B, n,r)$G
     newmx[i,] <- manov(Yssp$W, Yssp$B, n,r)$eige1
@@ -136,7 +137,8 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
     }
   }
 
-
+  if (graph==TRUE) {
+  
   mypath <- file.path(paste(directory),paste("PGP","_boxplot" ,paste("_p",p,"n",n,"r",r,"k",k,sep=""), ".pdf", sep = ""))
   pdf(file=mypath)
   boxplot(ProjPG,col="grey",boxwex=0.4,xlab="Eigenvector",ylab="Projection of P through G")
@@ -199,15 +201,20 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor) {
   boxplot(remssl,add=TRUE, at=1.5:(p+0.5), boxwex=0.4,xaxt='n')
   abline(mean(diag(SigmaE)+diag(SigmaA)),0,lty=2)
   dev.off()
-
+  }
+  else if (missing(graph)){
+    
+  }
   return(list(LisP=LisP,LisG=LisG,remssl=remssl,Peig=Peig,newmx=newmx))
 }
 
 
 TWshift<-function(vec,n,p) { ### n = no individuals, p = no traits
   m<-rep(0,length(vec))
+  a<-((sqrt(p)+sqrt(n))^(2))
+  b<-((sqrt(n)+sqrt(p))*((1/sqrt(p)+1/sqrt(n))^(1/3)))
   for (i in 1:length(vec)) {
-    m[i]<-(n*vec[i]-(sqrt(p)+sqrt(n))^(2))/((sqrt(n)+sqrt(p))*((1/sqrt(p)+1/sqrt(n))^(1/3)))
+    m[i]<-(n*vec[i]-a)/b
   }
   return (m)
 }
@@ -244,7 +251,6 @@ boxplot(ransimTW,boxwex=0.2, col='grey42', xaxis=NULL,add=TRUE,at=1.2)
 legend(x="bottomleft", fill=c("white","grey","grey42"), legend=c("shifted","simulatedTW1","simulatedTW2"))
 dev.off()
 
-
 mypath <- file.path(paste("C:/ABakeSumProj"),paste("QQTW" ,paste("_p",10,"n",50,"r",5,"k",10000,sep=""), ".pdf", sep = ""))
 pdf(file=mypath)
 qqplot(ransimTW,ranTW,xlab="Shifted and rescaled Correlation matrix eigenvalues",ylab="Randomly simulated Tracy-Widom rescaling")
@@ -262,3 +268,48 @@ mypath <- file.path(paste("C:/ABakeSumProj"),paste("Coefficient_of_variation for
 pdf(file=mypath)
 plot(1:10,sqrt(diag(var(Nrand$Peig)))/colMeans(Nrand$Peig),ylab="CV",xlab="Eigenvalues",pch=15,bg="grey")
 dev.off()
+Multrun<-function(p,n,r) {
+  z<-vector("list",length(p))
+for ( i in 1:length(p)) {
+  z[[i]]<-GPmatcomp(p[i],n[i],r[i],0*diag(p[i]),diag(p[i]),1000, "C:/ABakeSumProj", cor=TRUE)
+  
+  }
+  return (z)
+}
+
+GreaterthanNindx<-function(index,n,dir) {
+  m<-read.csv(index,header=TRUE,stringsAsFactors=FALSE)
+  q<-m[m[,9]>5,]
+  write.csv(q,file=paste(dir,>=nsubmats,sep="/"),row.names=FALSE)
+  return(q)
+}
+
+PonNconv<-function(p,r,index) {
+  z<-read.csv(index, header=TRUE,stringsAsFactors=FALSE)
+  m<-rep(0,length(z[,1]))
+  for (i in 1:length(z[,1])) {
+    m[i]<-z[i,(column of organism number)] -z[i,(column of organism numbers)]%%r
+    m[i]<-m[i]/r
+  }  
+  return (m)
+}
+
+
+TWidomTest<-function(index, r,p, k,directory,cor, graph,PaGlist) {
+  q<-vector("list",k)
+  Q<-PonNconv(p,r,index)
+  ObsTW<-rep(0,length(z[,]))
+  for (i in 1:length(z[,])) {
+    q[i]<-GPmatcomp(p,Q[i],r,k,directory,cor,graph)
+    l<-rep(0,k)
+    for (j in 1:k) {
+      l[j]<-p^(2/3)*(max(q$newmx[k,])-2)
+    }
+    Md<-mean(l)
+    Sd<-sd(l)
+    Pmax<-p^(2/3)*(PaGlist[[3]][i,1]-2)
+    TWd<-(-1.206+(1.268/Sd)*(Pmax+Md))
+    ObsTW[i]<-TWd
+  }
+  return (ObsTW)
+}
