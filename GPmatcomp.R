@@ -302,23 +302,27 @@ TWidomTest<-function(index, r,p, k,directory, graph,PaGlist) { ### Issue with Pm
   q<-vector("list",length(PaGlist[,1]))
   Shift<-vector("list",length(PaGlist[,1]))
   Q<-PonNconv(p,r,index)
-  ObsTW<-rep(0,length(PaGlist[,1]))
-  Md<-rep(0,length(PaGlist[,1]))
-  Sd<-rep(0,length(PaGlist[,1]))
-  TSd<-rep(0,length(PaGlist[,1]))
+  ObsTW<-matrix(0,nrow=length(PaGlist[,1]),ncol=length(PaGlist[1,]))
+  Md<-matrix(0,nrow=length(PaGlist[,1]),ncol=length(PaGlist[1,]))
+  Sd<-matrix(0,nrow=length(PaGlist[,1]),ncol=length(PaGlist[1,]))
+  TSd<-matrix(0,nrow=length(PaGlist[,1]),ncol=length(PaGlist[1,]))
   for (i in 1:length(PaGlist[,1])) {
     q[[i]]<-GPmatcomp(p,Q[i],r,0*diag(p),diag(p),k,directory,TRUE,graph)
+    Shiftsto<-matrix(0,nrow=length(q[[i]]$Peig[,1]),ncol=p)
     l<-rep(0,k)
     Pmax<-0
     TWd<-0
-    l<-q[[i]]$Peig[,1]
+    for (j in 1:length(PaGlist[1,])) {
+    l<-q[[i]]$Peig[,j]
     qden<-density(l)
-    Md[i]<-sum(((qden$x*qden$y))*(qden$x[2]-qden$x[1])) ### first raw moment = E(X)=mean
-    TSd[i]<-sqrt(sum(((qden$x-Md[i])^2*qden$y))*(qden$x[2]-qden$x[1])) ### sqrt of the 2nd central moment about the mean
-    Pmax<-PaGlist[i,1]
-    TWd<-(-1.206+(1.268/TSd[i])*(Pmax-Md[i])) #### used MTW and STW^2 from Saccenti et al
-    Shift[[i]]<-(-1.206+(1.268/TSd[i])*(q[[i]]$Peig[,1]-Md[i]))
-    ObsTW[i]<-TWd
+    Md[i,j]<-sum(((qden$x*qden$y))*(qden$x[2]-qden$x[1])) ### first raw moment = E(X)=mean
+    TSd[i,j]<-sqrt(sum(((qden$x-Md[i,j])^2*qden$y))*(qden$x[2]-qden$x[1])) ### sqrt of the 2nd central moment about the mean
+    Pmax<-PaGlist[i,j]
+    TWd<-(-1.206+(1.268/TSd[i,j])*(Pmax-Md[i,j])) #### used MTW and STW^2 from Saccenti et al
+    Shiftsto[,j]<-(-1.206+(1.268/TSd[i,j])*(q[[i]]$Peig[,j]-Md[i,j]))
+    ObsTW[i,j]<-TWd
+    }
+    Shift[[i]]<-Shiftsto
   }
   return (list(ObsTW=ObsTW,Peig=l,Md=Md,TSd=TSd,Shift=Shift))
 }
@@ -367,3 +371,15 @@ write.csv(permsto[[5]],row.names=FALSE,file="SimulatedGeigenvalues.csv")
 
 #####
 ####  rm(list = setdiff(ls(), lsf.str())) removes all non-function arguments from environment
+masto<-matrix(0,nrow=430,ncol=5)
+for (i in 1:length(teststo$Shift)) {
+  for (j in 1:5){
+  masto[((10*(i-1)+1):(10*i)),j]<-teststo$Shift[[i]][,j]
+  }
+}
+library(RMTstat)
+hist(masto[,1],breaks=40,freq=FALSE)
+RTW<-rtw(1000,1)
+lines(density(RTW))
+lines(density(masto[,1]))
+
