@@ -1,6 +1,6 @@
-"water.use.efficiency","Rosette.size","chlorophyll.concentration","Stomatal.conductance","specific.leaf.area"
-1,0.05,0.057,-0.9,-0.297
-0.05,1,-0.157,-0.064,-0.08
-0.057,-0.157,1,0.058,-0.306
--0.9,-0.064,0.058,1,0.237
--0.297,-0.08,-0.306,0.237,1
+"chlorophyll.concentration","Stomatal.conductance","water.use.efficiency","Rosette.size","specific.leaf.area"
+1,0.058,0.057,-0.157,-0.306
+0.058,1,-0.9,-0.064,0.237
+0.057,-0.9,1,0.05,-0.297
+-0.157,-0.064,0.05,1,-0.08
+-0.306,0.237,-0.297,-0.08,1

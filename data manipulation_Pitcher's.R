@@ -486,8 +486,8 @@ Psubmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproje
 
 #### P & G mats = list (will use matfromind and mataslist functions)
 PaG<-function() {
-  q<-MatasList("G:/GIThub/Rproject/Psubmatrices")
-  p<-ReMatfromInd("G:/GIThub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","G:/GIThub/Rproject/Psubmatindex.csv")
+  q<-MatasList("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices")
+  p<-ReMatfromInd("C:/Users/s4284361/Documents/Github/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","C:/Users/s4284361/Documents/Github/Rproject/Psubmatindex.csv")
   return  (list(Pcor=q,Gcor=p))
 }
 
@@ -575,18 +575,23 @@ PthroughG2<-function(tests) { ## dir1 is the directory of P submatrices and dir2
 }
 
 #### Analysis changed to ignore trait_types. Variability was too large to discriminate between groups. Also, con1992.170 was removed due to correlation values far greater than 1.
-
+if (FALSE) {
 
 Pcor<-listcov2cor(MatasList("G:/GIThub/Rproject/Psubmatrices"))
 WriteMatList(Pcor,"G:/GIThub/Rproject/Psubmatrices")
+
+}
+
 PG<-PaG() ##### not geme2001.473 was earlier removed. Rerunning everything includes it. Must be removed for later functions to work. 
 tests<-matsubsample(PG,5)
+test2<-PthroughG2(tests)
+if (FALSE) {
 lkt<-tests
 names(lkt[[1]])<-paste(names(lkt[[1]]),".csv",sep="")
 names(lkt[[2]])<-paste(names(lkt[[2]]),".csv",sep="")
 WriteMatList(lkt[[1]],"C:/Users/s4284361/Documents/GitHub/Rproject/Psubsampledmatrices")
 WriteMatList(lkt[[2]],"C:/Users/s4284361/Documents/GitHub/Rproject/Gsubsampledmatrices")
-test2<-PthroughG2(tests)
+
 
 Gdir<-"C:/Users/s4284361/Documents/GitHub/Rproject/Graphs"
 
@@ -715,6 +720,7 @@ nullmat[,1:5]<-test2[[1]]
 nullmat[,6:10]<-test2[[2]]
 nullmat[,11:15]<-test2[[3]]
 
+#### Unused function and graph
 anglePG<-function(lists){
   angle<-matrix(0,nrow=length(lists[[1]]),ncol=5*length(lists[[1]][[1]][1,]))
   for (i in 1:length(lists[[1]])) {
@@ -736,14 +742,6 @@ boxplot(q[,21:25],add=TRUE,boxwex=0.12,at=1:5+0.40,col="azure",xaxt='n')
 abline(90,0,lty=2) ### angle for orthogonal matrices
 cov2cor(var(q[,c(1,6,11,16,21)])) # angle correlation
 
-matrix(colMeans(q),5,byrow=T) ## matrix of means
 
-m<-list()
-for (i in 1:length(PG[[1]])) {
-  if (sum(grepl(substr(names(PG[[1]])[i],1,10),substr(names(PG[[2]]),1,10)))==0){
-    m<-names(PG[[1]][i])
-  }
-  else {
-    
-  }
 }
+#####

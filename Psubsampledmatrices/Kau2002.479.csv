@@ -1,6 +1,6 @@
-"percent.fillet.fat","condition.factor","percent.fillet.water","flesh.redness","percent.fillet.weight"
-1,0.38,-0.88,0.11,0.3
-0.38,1,-0.3,0.15,0.11
--0.88,-0.3,1,-0.1,-0.22
-0.11,0.15,-0.1,1,0.27
-0.3,0.11,-0.22,0.27,1
+"percent.fillet.weight","percent.abdominal.fat","percent.gutted.weight","condition.factor","percent.fillet.ash"
+1,0.08,0.73,0.11,-0.05
+0.08,1,0.12,0.04,0.01
+0.73,0.12,1,-0.22,-0.05
+0.11,0.04,-0.22,1,-0.01
+-0.05,0.01,-0.05,-0.01,1

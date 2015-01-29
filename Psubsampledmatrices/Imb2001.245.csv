@@ -1,6 +1,6 @@
-"no.bracts","percentage.of.central.achenes","no.florets.per.head","length.of.parastiches","no.inner.bracts"
-1,0.27,0.53,0.27,0.72
-0.27,1,0.32,0.29,0.14
-0.53,0.32,1,0.92,0.38
-0.27,0.29,0.92,1,0
-0.72,0.14,0.38,0,1
+"no.florets.per.head","no.outer.bracts","no.intermediate.achenes","no.bracts","percentage.of.peripheral.achenes"
+1,0.49,-0.05,0.53,-0.36
+0.49,1,-0.11,0.92,-0.28
+-0.05,-0.11,1,-0.06,0.16
+0.53,0.92,-0.06,1,-0.32
+-0.36,-0.28,0.16,-0.32,1

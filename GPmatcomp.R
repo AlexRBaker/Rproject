@@ -109,7 +109,6 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor, graph) {
   
   LisG<-vector("list",k)
   LisP<-vector("list",k)
-  LisPC<-vector("list",k)
   varmat<-matrix(0,nrow=k,ncol=p)
   Peig<-matrix(0,nrow=k,ncol=p)
   Gvarmat<-matrix(0,nrow=k,ncol=p)
@@ -120,10 +119,12 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor, graph) {
     Yssp <- ssp(Y,n,r)
     remssl[i,]<-reml(Yssp$W,Yssp$B,n,r)$lamB
     LisP[[i]]<-var(Y)
+    names(LisP)[i]<-paste(i,".csv",sep="")
     if (cor==TRUE) {
-      LisPC[[i]]<-cov2cor(LisP[[i]])
+      LisP[[i]]<-cov2cor(LisP[[i]])
     }
     LisG[[i]]<-manov(Yssp$W, Yssp$B, n,r)$G
+    names(LisG)[i]<-paste(i,".csv",sep="")
     newmx[i,] <- manov(Yssp$W, Yssp$B, n,r)$eige1
     Gvarmat[i,]<-sort(diag(manov(Yssp$W, Yssp$B, n,r)$G),decreasing=TRUE)
     varmat[i,]<-sort(diag(var(Y)),decreasing=TRUE)
@@ -227,6 +228,7 @@ n1<-sqrt(q$newmx[,1])/mean(q$newmx[,1])
 n2<-sqrt(q$newmx[,2])/mean(q$newmx[,2])
 n3<-sqrt(q$newmx[,3])/mean(q$newmx[,3])
 
+if (FALSE) {
 z<-data.frame(matrix(NA,nrow=1000,ncol=3))
 z[,1]<-n1
 z[,2]<-n2
@@ -268,7 +270,7 @@ mypath <- file.path(paste("C:/ABakeSumProj"),paste("Coefficient_of_variation for
 pdf(file=mypath)
 plot(1:10,sqrt(diag(var(Nrand$Peig)))/colMeans(Nrand$Peig),ylab="CV",xlab="Eigenvalues",pch=15,bg="grey")
 dev.off()
-
+}
 
 Multrun<-function(p,n,r) {
   z<-vector("list",length(p))
@@ -296,24 +298,83 @@ PonNconv<-function(p,r,index) {
   return (m)
 }
 
-
-TWidomTest<-function(index, r,p, k,directory,cor, graph,PaGlist) { ### Issue with Pmax and TWd
+TWidomTest<-function(index, r,p, k,directory, graph,PaGlist,trans) { ### Issue with Pmax and TWd
   q<-vector("list",length(PaGlist[,1]))
+  Shift<-vector("list",length(PaGlist[,1]))
   Q<-PonNconv(p,r,index)
   ObsTW<-rep(0,length(PaGlist[,1]))
+  Md<-rep(0,length(PaGlist[,1]))
+  Sd<-rep(0,length(PaGlist[,1]))
+  TSd<-rep(0,length(PaGlist[,1]))
   for (i in 1:length(PaGlist[,1])) {
-    q[[i]]<-GPmatcomp(p,Q[i],r,0*diag(p),diag(p),k,directory,cor,graph)
+    q[[i]]<-GPmatcomp(p,Q[i],r,0*diag(p),diag(p),k,directory,TRUE,graph)
     l<-rep(0,k)
     Pmax<-0
     TWd<-0
-    for (j in 1:k) {
-      l[j]<-p^(2/3)*((q[[i]]$Peig[j,1])-2)
+    if (trans==TRUE) {
+      for (j in 1:k) {
+        l[j]<-p^(2/3)*((q[[i]]$Peig[j,1])-2)
+      }
     }
-    Md<-mean(l)
-    Sd<-sd(l)
+    else {
+      for (j in 1:k) {
+      l[j]<-q[[i]]$Peig[j,1]
+      }
+    }
+    qden<-density(l)
+    Md[i]<-sum(((qden$x*qden$y))*(qden$x[2]-qden$x[1]))
+    TSd[i]<-sqrt(sum(((qden$x-mean(qden$x))^2*qden$y))*(qden$x[2]-qden$x[1])) ### sqrt of the 2nd central moment about the mean
+    if (trans==TRUE){
     Pmax<-p^(2/3)*(PaGlist[i,1]-2)
-    TWd<-(-1.206+(1.268/Sd)*(Pmax+Md))
+    }
+    else {
+      Pmax<-PaGlist[i,1]
+    }
+    TWd<-(-1.206+(1.268/TSd[i])*(Pmax-Md[i])) #### used MTW and STW^2 from Saccenti et al
+    Shift[[i]]<-(-1.206+(1.268/TSd[i])*(q[[i]]$Peig[,1]-Md[i]))
     ObsTW[i]<-TWd
   }
-  return (list(ObsTW,l))
+  return (list(ObsTW,l,Md,TSd,Shift))
 }
+
+##### Generating Tracy-Widom plot
+library(RMTstat)
+RTW<-rtw(10000,1)
+hist(RTW,breaks=50, xlab="TW statistic",ylab="Frequency",main=NULL,freq=FALSE)
+abline(v=qtw(0.05,lower.tail=FALSE),lty=2)
+
+qtem<-GPmatcomp(5,100,5,0*diag(5),diag(5),1000,"C:/ABakeSumProj",TRUE,FALSE)
+qden<-density(qtem$Peig[,1])
+Md<-sum(((qden$x*qden$y))*(qden$x[2]-qden$x[1]))
+TSd<-sqrt(sum(((qden$x-mean(qden$x))^2*qden$y))*(qden$x[2]-qden$x[1]))
+temp<-(-1.206+(1.268/TSd)*(qtem$Peig[,1]-Md))
+
+hist(temp,breaks=40, freq=FALSE,xlab="Shifted and Rescaled eigenvalues",main=NULL)
+abline(v=qtw(0.05,lower.tail=FALSE),lty=2,ylim=c(0,0.1))
+lines(density(RTW))
+points(type="l",x=c(0,0),y=c(0.38,4))
+
+RTW<-rtw(10000,1)
+m<-hist(RTW,breaks=50, xlab="TW statistic",ylab="Frequency",main=NULL,freq=FALSE)
+abline(v=qtw(0.05,lower.tail=FALSE),lty=2)
+for (i in 1:length(tempsto[[1]])) {
+  points(type="l",x=c(tempsto[[1]][i],tempsto[[1]][i]),y=c(max(m$density)-(max(m$density)-min(m$density))/12,max(m$density)))
+}
+
+##### Code for writing final version of data into folders ### Note median p/n ~ 0.012
+permsto<-GPmatcomp(5,83,5,0*diag(5),diag(5), 1000,"C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=5/Graphs", FALSE,TRUE)
+WriteMatList(permsto[[1]],"C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=5/Pmat")
+WriteMatList(permsto[[2]],"C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=5/Gmat")
+setwd("C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=5")
+write.csv(permsto[[4]],row.names=FALSE,file="SimulatedPeigenvalues.csv")
+write.csv(permsto[[5]],row.names=FALSE,file="SimulatedGeigenvalues.csv")
+
+permsto<-GPmatcomp(10,166,5,0*diag(10),diag(10), 1000,"C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=10/Graphs", FALSE,TRUE)
+WriteMatList(permsto[[1]],"C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=10/Pmat")
+WriteMatList(permsto[[2]],"C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=10/Gmat")
+setwd("C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=10")
+write.csv(permsto[[4]],row.names=FALSE,file="SimulatedPeigenvalues.csv")
+write.csv(permsto[[5]],row.names=FALSE,file="SimulatedGeigenvalues.csv")
+
+
+
