@@ -149,31 +149,27 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor, graph) {
   ###boxplot for eigenvaluees and variance of P matrix
   mypath <- file.path(paste(directory),paste("Peig&Var","_boxplot" ,paste("_p",p,"n",n,"r",r,"k",k,sep=""), ".pdf", sep = ""))
   pdf(file=mypath)
-  boxplot(Peig,col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Phenotypic variance")
-  boxplot(varmat,add=TRUE, at=1.5:(p+0.5), boxwex=0.4,xaxt='n')
+  boxplot(Peig,col="grey",boxwex=0.5,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Phenotypic variance")
   abline(mean(diag(SigmaE)+diag(SigmaA)),0,lty=2)
   dev.off()
   
   ###boxplot for eigenvaluees and variance of G matrix
   mypath <- file.path(paste(directory),paste("Geig&Var","_boxplot" ,paste("_p",p,"n",n,"r",r,"k",k,sep=""), ".pdf", sep = ""))
   pdf(file=mypath)
-  boxplot(newmx,col="grey",boxwex=0.4,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Genetic variance")
-  boxplot(Gvarmat,add=TRUE, at=1.5:(p+0.5), boxwex=0.4,xaxt='n')
+  boxplot(newmx,col="grey",boxwex=0.5,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Genetic variance")
   abline(mean(diag(SigmaA)),0,lty=2)
   dev.off()
-  # Peig and varmat not calculated using REML, newmx is REML estimate of eigenvalues
   
-  #new REML estimates of G var matrix
-  
-  # Generates eigenvalues for 200 simulated G matrices.
-  #need to extract unconstrained REML estimates of variances for each trait.
-  
-  # Need to generate density histograms to see if marchenko-Pastur distribution fits
-  
-  #Values used from aug13 to generate limiting spectral distribution of eigenvalues for G
-  #No. lines
-  # no replicates per line
-  # no. traits measured
+  mypath <- file.path(paste(directory),paste("Peig&Geig","_boxplot" ,paste("_p",p,"n",n,"r",r,"k",k,sep=""), ".pdf", sep = ""))
+  pdf(file=mypath)
+  par(mfrow=c(1,2))
+  boxplot(Peig,col="grey",boxwex=0.5,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Phenotypic variance")
+  abline(mean(diag(SigmaE)+diag(SigmaA)),0,lty=2)
+  boxplot(newmx,col="grey",boxwex=0.5,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Genetic variance")
+  abline(mean(diag(SigmaA)),0,lty=2)
+  dev.off()
+
+  #### implements spectral distribution as given in Iain's Code
   nH <- n-1
   nE <- n*(r-1)
   c1 <- p/nH
@@ -220,13 +216,15 @@ TWshift<-function(vec,n,p) { ### n = no individuals, p = no traits
   return (m)
 }
 
-
+if (FALSE) {
 n<-sqrt(q$newmx[,1])/mean(q$newmx[,1])
 l<-sqrt(q$Peig)/colMeans(q$Peig)
 l2<-sqrt(q$newmx[,1:3])/rep(colMeans(q$newmx[,1:3]),each=1000)
 n1<-sqrt(q$newmx[,1])/mean(q$newmx[,1])
 n2<-sqrt(q$newmx[,2])/mean(q$newmx[,2])
 n3<-sqrt(q$newmx[,3])/mean(q$newmx[,3])
+
+}
 
 if (FALSE) {
 z<-data.frame(matrix(NA,nrow=1000,ncol=3))
@@ -328,32 +326,8 @@ TWidomTest<-function(index, r,p, k,directory, graph,PaGlist) { ### Issue with Pm
 }
 
 ##### Generating Tracy-Widom plot
-library(RMTstat)
-RTW<-rtw(10000,1)
-hist(RTW,breaks=50, xlab="TW statistic",ylab="Frequency",main=NULL,freq=FALSE)
-abline(v=qtw(0.05,lower.tail=FALSE),lty=2)
 
-qtem<-GPmatcomp(5,100,5,0*diag(5),diag(5),1000,"C:/ABakeSumProj",TRUE,FALSE)
-qden<-density(qtem$Peig[,1])
-Md<-sum(((qden$x*qden$y))*(qden$x[2]-qden$x[1]))
-TSd<-sqrt(sum(((qden$x-mean(qden$x))^2*qden$y))*(qden$x[2]-qden$x[1]))
-temp<-(-1.206+(1.268/TSd)*(qtem$Peig[,1]-Md))
-
-hist(temp,breaks=40, freq=FALSE,xlab="Shifted and Rescaled eigenvalues",main=NULL)
-abline(v=qtw(0.05,lower.tail=FALSE),lty=2,ylim=c(0,0.1))
-lines(density(RTW))
-points(type="l",x=c(0,0),y=c(0.38,4))
-
-RTW<-rtw(10000,1)
-m<-hist(RTW,breaks=50, xlab="TW statistic",ylab="Frequency",main=NULL,freq=FALSE,ylim=c(0,0.38))
-abline(v=qtw(0.05,lower.tail=FALSE),lty=2)
-mx<-max(m$density)
-mn<-min(m$density)
-sub<-mx-mn
-for (i in 1:length(tempsto[[1]])) {
-  points(type="l",x=c(tempsto[[1]][i],tempsto[[1]][i]),y=c(mx+0.05*sub,mx+0.15*sub))
-}
-
+if (FALSE) {
 ##### Code for writing final version of data into folders ### Note median p/n ~ 0.012
 permsto<-GPmatcomp(5,83,5,0*diag(5),diag(5), 1000,"C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=5/Graphs", FALSE,TRUE)
 WriteMatList(permsto[[1]],"C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=5/Pmat")
@@ -369,17 +343,41 @@ setwd("C:/Users/s4284361/Documents/GitHub/Rproject/Simulatedstorage/p=10")
 write.csv(permsto[[4]],row.names=FALSE,file="SimulatedPeigenvalues.csv")
 write.csv(permsto[[5]],row.names=FALSE,file="SimulatedGeigenvalues.csv")
 
+}
 #####
 ####  rm(list = setdiff(ls(), lsf.str())) removes all non-function arguments from environment
-masto<-matrix(0,nrow=430,ncol=5)
-for (i in 1:length(teststo$Shift)) {
-  for (j in 1:5){
-  masto[((10*(i-1)+1):(10*i)),j]<-teststo$Shift[[i]][,j]
+
+
+if (FALSE) {
+  load("F:/randomised_empirical_shift.RData")
+  library(RMTstat)
+  RTW<-rtw(10000,1)
+  ### Graph comparing observed data to theoretical distribution.   
+  m<-hist(RTW,breaks=50, xlab="TW statistic",main=NULL,freq=FALSE,ylim=c(0,0.38))
+  abline(v=qtw(0.05,lower.tail=FALSE),lty=2)
+  mx<-max(m$density)
+  mn<-min(m$density)
+  sub<-mx-mn
+  for (i in 1:length(teststo[[1]])) {
+    points(type="l",x=c(teststo[[1]][i],teststo[[1]][i]),y=c(mx+0.05*sub,mx+0.15*sub))
   }
+  
+  
+  ### Graph comparing fit of null data to theoretical distribution
+  masto<-matrix(0,nrow=430000,ncol=5)
+  for (i in 1:length(teststo$Shift)) {
+    masto[((10000*(i-1)+1):(10000*i)),1:5]<-teststo$Shift[[i]][,1:5]
+  }
+  
+  mypath=
+  pdf(file=mypath)
+  hist(RTW,breaks=50,freq=FALSE,ylim=c(0,0.35), main=NULL,xlab="Random Tracy-Widom values")
+  lines(density(masto[,1]),lwd=2,col="black")
+  lines(density(masto[,3]),lwd=2,col="#E69F00")
+  lines(density(masto[,5]),lwd=2, col="#0072B2")
+  legend(x="topright", lty=c(1,1,1),col=c("black","#E69F00","#0072B2"), legend=c(expression(paste("Shifted ",lambda[1],sep="")),expression(paste("Shifted ",lambda[3],sep="")),expression(paste("Shifted ",lambda[5],sep=""))),bty="n")
+  dev.off()
+  
 }
-library(RMTstat)
-hist(masto[,1],breaks=40,freq=FALSE)
-RTW<-rtw(1000,1)
-lines(density(RTW))
-lines(density(masto[,1]))
+
 

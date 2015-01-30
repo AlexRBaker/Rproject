@@ -484,10 +484,10 @@ Psubmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproje
 
 #####Trialling final graph
 
-#### P & G mats = list (will use matfromind and mataslist functions)
+#### P & G mats = list (will use matfromind and mataslist functions) ## Ending at uni = C:/Users/s4284361/Documents/GitHub at home =G:/GIThub
 PaG<-function() {
-  q<-MatasList("G:/GIThub/Rproject/Psubmatrices")
-  p<-ReMatfromInd("G:/GIThub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","G:/GIThub/Rproject/Psubmatindex.csv")
+  q<-MatasList("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices")
+  p<-ReMatfromInd("C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv")
   return  (list(Pcor=q,Gcor=p))
 }
 
@@ -595,26 +595,12 @@ WriteMatList(lkt[[2]],"C:/Users/s4284361/Documents/GitHub/Rproject/Gsubsampledma
 
 Gdir<-"C:/Users/s4284361/Documents/GitHub/Rproject/Graphs"
 
-mypath<-file.path(paste(Gdir),paste("P&G","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
-pdf(file=mypath)
-boxplot(test2[[3]],col="white",boxwex=0.25,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
-boxplot(test2[[2]],col="grey",add=TRUE, at=1.3:(5+0.3), boxwex=0.25,xaxt='n')
-legend(x="topright", c("Genetic Correlation","Phenotypic Correlation"), fill=c("white","grey"))
-dev.off()
-
-
-mypath<-file.path(paste(Gdir),paste("PthroughG","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
-pdf(file=mypath)
-boxplot(test2[[1]],col="white",boxwex=0.25,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance")
-legend(x="topright", c("P%*%G%*%P"), fill=c("White"))
-dev.off()
-
 mypath<-file.path(paste(Gdir),paste("All3","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
 pdf(file=mypath)
-boxplot(test2[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="Scaled Phenotypic/Genetic variance",ylim=c(0,max(test2[[1]])))
+boxplot(test2[[2]],col="grey",boxwex=0.18,xaxis=NULL,xlab="Eigenvector",ylab="Scaled variance",ylim=c(min(test2[[2]],test2[[3]],test2[[1]]),max(test2[[2]],test2[[3]],test2[[1]])))
 boxplot(test2[[3]],add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
 boxplot(test2[[1]],col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
-legend(x="topright", c("Phenotypic correlation","Genotypic correlation","Projection of P through G"), fill=c("white","grey","gray42"))
+legend(x="topright", c("Phenotypic_Correlation","Genetic_Correlation","Projection of P through G"), fill=c("grey","white","gray42"))
 dev.off()
 
 z<-(test2$Peigsto-test2$Geigsto)
@@ -653,10 +639,11 @@ DifL<-(LPtG[[2]]-LPtG[[3]])
 
 mypath<-file.path(paste(Gdir),paste("SplitT_P","_boxplot" ,paste("T5n=43"), ".pdf", sep = ""))
 pdf(file=mypath)
-boxplot(DifL,col="white",boxwex=0.18,xaxis=NULL,xlab="Trait or Eigenvector",ylab="eig(P) - eig(G)")
+boxplot(DifL,col="white",boxwex=0.18,xaxis=NULL,xlab="Eigenvector",ylab="eig(P) - eig(G)",ylim=c(min(DifM,DifL,DifS),max(DifM,DifL,DifS)))
 boxplot(DifM,col="grey",add=TRUE, at=1.2:(5+0.2), boxwex=0.18,xaxt='n')
 boxplot(DifS,col="gray42",add=TRUE, at=1.4:(5+0.4), boxwex=0.18,xaxt='n')
 abline(0,0,lty=2)
+text(x=c(0.5,0.5),y=c(0.25,-0.25), labels=c("P>G","P<G"))
 legend(x="bottomright", c("Life History - 7","Morphology - 26","Sexually Selected - 10"), fill=c("white","grey","gray42"))
 dev.off()
 
