@@ -486,8 +486,8 @@ Psubmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproje
 
 #### P & G mats = list (will use matfromind and mataslist functions) ## Ending at uni = C:/Users/s4284361/Documents/GitHub at home =G:/GIThub
 PaG<-function() {
-  q<-MatasList("C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices")
-  p<-ReMatfromInd("C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatindex.csv")
+  q<-MatasList("G:/GIThub/Rproject/Psubmatrices")
+  p<-ReMatfromInd("G:/GIThub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","G:/GIThub/Rproject/Psubmatindex.csv")
   return  (list(Pcor=q,Gcor=p))
 }
 

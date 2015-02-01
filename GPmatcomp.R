@@ -121,7 +121,9 @@ GPmatcomp<-function(p,n,r,SigmaA,SigmaE,k,directory,cor, graph) {
     LisP[[i]]<-var(Y)
     names(LisP)[i]<-paste(i,".csv",sep="")
     if (cor==TRUE) {
-      LisP[[i]]<-cov2cor(LisP[[i]])
+      L<-Y
+      L<-scale(L, center=TRUE, scale=TRUE)
+      LisP[[i]]<-cor(L)
     }
     LisG[[i]]<-manov(Yssp$W, Yssp$B, n,r)$G
     names(LisG)[i]<-paste(i,".csv",sep="")
@@ -296,7 +298,7 @@ PonNconv<-function(p,r,index) {
   return (m)
 }
 
-TWidomTest<-function(index, r,p, k,directory, graph,PaGlist) { ### Issue with Pmax and TWd
+TWidomTest<-function(index, r,p, k,directory, graph,PaGlist,mean) { ### Issue with Pmax and TWd
   q<-vector("list",length(PaGlist[,1]))
   Shift<-vector("list",length(PaGlist[,1]))
   Q<-PonNconv(p,r,index)
@@ -313,7 +315,12 @@ TWidomTest<-function(index, r,p, k,directory, graph,PaGlist) { ### Issue with Pm
     for (j in 1:length(PaGlist[1,])) {
     l<-q[[i]]$Peig[,j]
     qden<-density(l)
+    if (mean==FALSE) {
     Md[i,j]<-sum(((qden$x*qden$y))*(qden$x[2]-qden$x[1])) ### first raw moment = E(X)=mean
+    }
+    else {
+      Md[i,j]<-mean(l)
+    }
     TSd[i,j]<-sqrt(sum(((qden$x-Md[i,j])^2*qden$y))*(qden$x[2]-qden$x[1])) ### sqrt of the 2nd central moment about the mean
     Pmax<-PaGlist[i,j]
     TWd<-(-1.206+(1.268/TSd[i,j])*(Pmax-Md[i,j])) #### used MTW and STW^2 from Saccenti et al
@@ -324,7 +331,7 @@ TWidomTest<-function(index, r,p, k,directory, graph,PaGlist) { ### Issue with Pm
   }
   return (list(ObsTW=ObsTW,Peig=l,Md=Md,TSd=TSd,Shift=Shift))
 }
-
+### Used command - TWidomTest("G:/GIThub/Rproject/nsubmats.csv",5,5,10000, "G:/GIThub/Rproject",FALSE, test2[[2]])
 ##### Generating Tracy-Widom plot
 
 if (FALSE) {
