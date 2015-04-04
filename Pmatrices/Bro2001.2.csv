@@ -1,4 +1,4 @@
-spotnumber,meanbrightness,brightnesscontrast,meanchroma,colourcontrast
+"spotnumber","meanbrightness","brightnesscontrast","meanchroma","colourcontrast"
 1,0.196,0.459,-0.011,0.472
 0.196,1,0.187,0.069,0.3712
 0.459,0.187,1,-0.248,0.457

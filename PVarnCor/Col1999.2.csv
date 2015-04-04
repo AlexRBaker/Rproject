@@ -1,0 +1,5 @@
+peak.amplitude,signal.rate,asynchrony.interval,development.time
+1,-0.08,0.09,-0.02
+-0.08,1,-0.24,-0.05
+0.09,-0.24,1,0
+-0.02,-0.05,0,1

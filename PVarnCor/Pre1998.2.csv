@@ -1,0 +1,6 @@
+abdomen.length,thorax.length,hind-femur.length,mid-femur.length,fore-femur.width
+1,0.54,0.37,0.39,0.33
+0.54,1,0.46,0.48,0.38
+0.37,0.46,1,0.88,0.27
+0.39,0.48,0.88,1,0.24
+0.33,0.38,0.27,0.24,1

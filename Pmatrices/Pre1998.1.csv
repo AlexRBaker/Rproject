@@ -1,4 +1,4 @@
-abdomen.length,thorax.length,gential.length,hind-femur.length,mid-femur.length,fore-femur.length,fore-femur.width
+"abdomen.length","thorax.length","gential.length","hind.femur.length","mid.femur.length","fore.femur.length","fore.femur.width"
 1,0.39,-0.02,0.22,0.26,0.32,0.3
 0.39,1,-0.02,0.37,0.47,0.46,0.46
 -0.02,-0.02,1,-0.06,-0.05,0,-0.02

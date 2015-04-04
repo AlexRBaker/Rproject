@@ -1,4 +1,4 @@
-nut.mass,kernal.mass,kernal.recovery,percentage.1st.grade.kernal,percentage.whole.kernals
+"nut.mass","kernal.mass","kernal.recovery","percentage.1st.grade.kernal","percentage.whole.kernals"
 1,0.68,0.02,0.22,0.08
 0.68,1,0.49,0.25,0.13
 0.02,0.49,1,0.09,0.17

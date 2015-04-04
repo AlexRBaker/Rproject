@@ -1,4 +1,4 @@
-plant.height,plant.width,leaf.length,leaf.width,shoot.weight,root.weight,root.to.shoot.ratio,leaf.carbon.isotope.discrimination
+"plant.height","plant.width","leaf.length","leaf.width","shoot.weight","root.weight","root.to.shoot.ratio","leaf.carbon.isotope.discrimination"
 1,0.74,0.72,-0.34,0.7,0.67,0,0.21
 0.74,1,0.91,-0.17,0.82,0.79,0,0.21
 0.72,0.91,1,-0.15,0.74,0.71,-0.02,0.22

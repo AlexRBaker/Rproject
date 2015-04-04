@@ -1,4 +1,4 @@
-body.mass,early.MMA,late.MMA,slope.of.mortality,intercept.of.mortality,mean.longevity,fertility
+"body.mass","early.MMA","late.MMA","slope.of.mortality","intercept.of.mortality","mean.longevity","fertility"
 1,-0.038,0.075,-0.09,-0.051,0.075,0.076
 -0.038,1,0.043,0.037,-0.054,0.014,0.105
 0.075,0.043,1,-0.02,0.016,0.07,0.115

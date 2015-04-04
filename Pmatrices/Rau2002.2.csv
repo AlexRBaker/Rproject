@@ -1,4 +1,4 @@
-mass.at.hatching,mass.at.72hrs,mass.at.dispersal,mass.at.emergence,hatching.to.dispersal,wandering.stage,in.pupal.chamber,hatching.to.emergence
+"mass.at.hatching","mass.at.72hrs","mass.at.dispersal","mass.at.emergence","hatching.to.dispersal","wandering.stage","in.pupal.chamber","hatching.to.emergence"
 1,0.12,0.11,0.04,0,0.11,0.03,0.11
 0.12,1,0.54,0.43,-0.69,0.11,0.15,-0.18
 0.11,0.54,1,0.88,-0.44,0.11,0.44,0.08

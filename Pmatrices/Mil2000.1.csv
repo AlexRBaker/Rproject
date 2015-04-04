@@ -1,4 +1,4 @@
-body.weight,hind.leg.length,incisor.breadth
+"body.weight","hind.leg.length","incisor.breadth"
 1,0.68,0.3
 0.68,1,0.31
 0.3,0.31,1

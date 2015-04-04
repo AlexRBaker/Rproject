@@ -332,6 +332,15 @@ MatfromInd<-function(dir1,dir2){ ## dir1 <- cor matrix folder ##dir 2 PmatIndex 
 #dir3<-"C:/Users/s4284361/Documents/GitHub/Rproject/Pmatindex.csv"
 #dir4<-"C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices"
 
+###### Example directories in new home machine
+dir1<-"C:/GITSto/Rproject/Pmatrices"
+  dir2<-"C:/GITSto/Pitchers/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs"
+  dir3<-"C:/GITSto/Rproject/Pmatindex.csv"
+  dir4<-"C:/GITSto/Rproject/Psubmatrices"
+
+
+
+######
 Psubmats<-function(dir1,dir2,dir3,dir4) { ### dir1 - Pmatrices , Gmatrices, dir3-Pmatindex, dir4-storagelocation
   ### It is assumed dir1 is the larger matrix and dir 2 the list of smaller ones
   modmatsto=list()
@@ -341,7 +350,7 @@ Psubmats<-function(dir1,dir2,dir3,dir4) { ### dir1 - Pmatrices , Gmatrices, dir3
   z<-read.csv(dir3,stringsAsFactors=FALSE)
   for (i in 1:length(z[,1])) {
     Pmat<-p[grepl(z[i,1],names(p))]
-    Gmat<-q[grepl(z[i,17],names(q))] ## takes substring from dir1 and compare and extract matrice with matching name from dir 2
+    Gmat<-q[grepl(z[i,17],names(q))] ## takes substring from dir1 and compare and extract matrix with matching name from dir 2
     matr<-data.frame(matrix(0,nrow=length(Pmat[[1]]),ncol=length(Gmat[[1]])))
     colnames(matr)<-names(Gmat[[1]])
     colnosto<-numeric(length(Gmat[[1]]))
@@ -454,22 +463,22 @@ SGeig<-SGeig[1:(counter-1),]
 return(list(SProj,SPeig,SGeig))
 }
 #### Creating an index document for Psubmatrices
-
+##dir="C:/GITSto/Rproject/Psubmatrices"
 Psubmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproject/Psubmatrices"
   p<-list.files(path=dir)
   p<-p[grepl(".csv",p)] ### Takes only the csv files
-  q<-read.csv("C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv",header=TRUE,stringsAsFactors=FALSE) ## Reads in orderdatamatrix
-  m<-read.csv("C:/Users/s4284361/Documents/GitHub/Rproject/Pmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
+  q<-read.csv("C:/GITSto/Pitchers/Pitchers_PTRS2014/Data/MatrixIndexFinal.csv",header=TRUE,stringsAsFactors=FALSE) ## Reads in orderdatamatrix
+  m<-read.csv("C:/GITSto/Rproject/Pmatindex.csv",header=TRUE,stringsAsFactors=FALSE)
   z<-data.frame(matrix(NA,nrow=length(p),ncol=(length(q)+2)))
   for (i in 1:length(p)) {
     z[i,]<-q[grepl(strsplit(p[[i]],".csv"),q[,5]),]
-    z[i,15]<-m[grepl(strsplit(p[[i]],".csv"),m[,17]),paste(11)]
+    z[i,15]<-m[grepl(strsplit(p[[i]],".csv"),m[,17]),11]
     z[i,16]<-m[grepl(strsplit(p[[i]],".csv"),m[,17]),14]
   }
   nam<-names(q)
   names(z)<-nam
   names(z)[c(15,16)]<-c("Title","DOI")
-  setwd("C:/Users/s4284361/Documents/GitHub/Rproject")
+  setwd("C:/GITSto/Rproject")
   write.csv("Psubmatindex.csv",x=z,row.names=FALSE)
 }
 
@@ -486,8 +495,8 @@ Psubmatindex<-function(dir) { ## dir ="C:/Users/s4284361/Documents/GitHub/Rproje
 
 #### P & G mats = list (will use matfromind and mataslist functions) ## Ending at uni = C:/Users/s4284361/Documents/GitHub at home =G:/GIThub
 PaG<-function() {
-  q<-MatasList("G:/GIThub/Rproject/Psubmatrices")
-  p<-ReMatfromInd("G:/GIThub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","G:/GIThub/Rproject/Psubmatindex.csv")
+  q<-MatasList("C:/GITSto/Rproject/Psubmatrices")
+  p<-ReMatfromInd("C:/GITSto/Pitchers/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs","C:/GITSto/Rproject/Psubmatindex.csv")
   return  (list(Pcor=q,Gcor=p))
 }
 
@@ -582,11 +591,40 @@ WriteMatList(Pcor,"G:/GIThub/Rproject/Psubmatrices")
 
 }
 
-MatasColumn<-function(Pmat,Gmat) {
+MatasColumn<-function(Pmat,Gmat,Index1) { ### Takes lists of matrices and turns them into a column form
+  ## Note that they must be the same length for this to work.
+  ##It assumes that your are using the final form of Paired P and G matrices
+  Tmax=MaxnoTraits(Pmat)
+  ColumnSto<-data.frame(matrix(NA,nrow=(length(Pmat)*Tmax),ncol=9))
+  colnames(ColumnSto)<-c("Matrix","P&GmatID","Organism","Population","Trait1", "Trait2","Pcorr","Gcorr","AbsDiff")
+  Ind<-read.csv(Index1,header=TRUE,stringsAsFactors=FALSE)
+  rowcount<-1
+  for (i in 1:length(Pmat)) {
+    Test<-(length(Pmat[[i]])-1)
+    for (j in 1:(length(Pmat[[i]])-1)) {
+      for (k in 1:Test) {
+      ColumnSto[rowcount,2]<-names(Pmat[i])
+      ColumnSto[rowcount,3]<-Ind[grepl(strsplit(names(Pmat[i]),".csv"),Ind[,5]),10]###Organism name from index
+      ColumnSto[rowcount,5]<- names(Pmat[[i]])[j]### Trait name 1 (Column) something like names(Pmat[[i]][,j])
+      ColumnSto[rowcount,6]<- names(Pmat[[i]])[k+j]## Trait name 2 (row)
+      ColumnSto[rowcount,7]<- Pmat[[i]][j,k+j]
+      ColumnSto[rowcount,8]<- Gmat[[i]][j,k+j]
+      ColumnSto[rowcount,9]<-abs(ColumnSto[rowcount,7]-ColumnSto[rowcount,8]) ## Absolute difference
+      rowcount<-rowcount+1
+      }
+      Test<-Test-1
+    }
+  }
+  ColumnSto<-ColumnSto[!is.na(ColumnSto[,8]),]
+  return(ColumnSto)
   
 }
-
-PG<-PaG() ##### not geme2001.473 was earlier removed. Rerunning everything includes it. Must be removed for later functions to work. 
+#### Writing ColumSto as csv file for other use.
+#PG<-PaG()
+ColumnSto<-MatasColumn(PG[[1]],PG[[2]],"C:/GITSto/Rproject/Psubmatindex.csv")
+write.csv("MatricesAsColumn.csv",x=ColumnSto,row.names=FALSE)
+###
+PG<-PaG() ##### note gem2001.473 was earlier removed. Rerunning everything includes it. Must be removed for later functions to work. 
 tests<-matsubsample(PG,5)
 test2<-PthroughG2(tests)
 if (FALSE) {
@@ -736,3 +774,13 @@ cov2cor(var(q[,c(1,6,11,16,21)])) # angle correlation
 
 }
 #####
+
+
+## Quick way to test if all names existi n matindex final 
+#for (i in 1:length(p)) {
+ # z[i,]<-sum(grepl(strsplit(p[[i]],".csv"),q[,5]))
+  #z[i,15]<-sum(grepl(strsplit(p[[i]],".csv"),m[,17]))
+  #z[i,16]<-sum(grepl(strsplit(p[[i]],".csv"),m[,17]))
+#}
+
+#sum(z[,1])/length(z[,1]) #!=1 indicates mistake

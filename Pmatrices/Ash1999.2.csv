@@ -1,4 +1,4 @@
-flowernumber,flowerbiomass,carpelnumber,petallength,stamenlength
+"flowernumber","flowerbiomass","carpelnumber","petallength","stamenlength"
 1,0.13,0.05,0.02,0.01
 0.13,1,0.45,0.54,0.36
 0.05,0.45,1,0.14,0.08

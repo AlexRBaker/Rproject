@@ -1,4 +1,4 @@
-quantum.efficiency,chlorophyll.concentration,Rosette.size,specific.leaf.area,light-saturated.photosynthetic.rate,Stomatal.conductance,water.use.efficiency
+"quantum.efficiency","chlorophyll.concentration","Rosette.size","specific.leaf.area","light.saturated.photosynthetic.rate","Stomatal.conductance","water.use.efficiency"
 1,0.238,0.104,-0.068,0.307,0.214,-0.211
 0.238,1,-0.157,-0.306,0.25,0.058,0.057
 0.104,-0.157,1,-0.08,-0.088,-0.064,0.05
