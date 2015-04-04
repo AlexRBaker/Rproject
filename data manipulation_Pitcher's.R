@@ -130,7 +130,7 @@ tempsto3[tempsto3[,16]==0,][,1] #### Gets the subset of papers without a corresp
 ### First need to create list of path files. Making it a function to avoid clutter in work space
 #dir1<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_&_means_as_CSVs/"
 #dir2<-"C:/Users/s4284361/Documents/GitHub/Pitchers_PTRS2014/Data/Gmats_Cor_as_CSVs/"
-## Creates list of pathfiles for files ina folder.
+## Creates list of pathfiles for files in a folder.
 path_file <- function(dir1,dir2) {
   if (missing(dir2)) {
     p<-paste(dir1,list.files(path=dir1),sep="/")
@@ -143,7 +143,7 @@ path_file <- function(dir1,dir2) {
   }
 }
 #### later found that full.names is an option to get complete path_file for documents in a directory for list.files/dir.
-## From Pitcher's, create list of matrices for use in R modified to be  function.
+## From Pitcher's, create list of matrices for use in R modified to by functions.
 MatasList<-function(dir1,dir2){
 if (missing(dir2)) {
   q<-path_file(dir1)
@@ -580,6 +580,10 @@ if (FALSE) {
 Pcor<-listcov2cor(MatasList("G:/GIThub/Rproject/Psubmatrices"))
 WriteMatList(Pcor,"G:/GIThub/Rproject/Psubmatrices")
 
+}
+
+MatasColumn<-function(Pmat,Gmat) {
+  
 }
 
 PG<-PaG() ##### not geme2001.473 was earlier removed. Rerunning everything includes it. Must be removed for later functions to work. 
